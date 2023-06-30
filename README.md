@@ -1,7 +1,5 @@
 # Chat App
 
----
-
 Simple **Chat APP** created with React TS and Node + Express + Socket.IO
 
 - Requirements:
