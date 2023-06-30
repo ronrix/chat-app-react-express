@@ -7,6 +7,7 @@ const Schema = mongoose.Schema;
     so that when a user queried, it will return other data it relates
 */
 const UserSchema = new Schema({
+    username: String,
     email: String,
     password: String,
     salt: String, // for password hashing

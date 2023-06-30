@@ -13,7 +13,7 @@ const startServer = async () => {
     databaseConnection();
 
     // set up express middlewares
-    app.use(cors({ origin: '*' }));
+    app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
     app.use(bodyParser.json()); // accept json format. like a body parser
     // parse incoming Request Object if object, with nested objects, or generally any type.
     app.use(bodyParser.urlencoded({ extended: true })); 

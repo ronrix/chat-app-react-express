@@ -1,10 +1,11 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const { APP_SECRET } = require('../config');
 
 // generate salt for password hashing
 module.exports.GenerateSalt = async () => {
   try {
-    return await bcrypt.genSalt();
+    return await bcrypt.genSalt(10);
   } catch(error) {
     console.log(error)
     throw new Error("Failed generating salt!");
@@ -49,4 +50,18 @@ module.exports.DecodeToken = async (token) => {
     console.log(error)
     throw new Error(`Failed decoding the token`);
   }
+}
+
+// validate the token
+module.exports.ValidateToken = async (req, res, next) => {
+  const token = req.cookies.session;
+  if(!token) {
+    return res.sendStatus(401);
+  }
+
+  jwt.verify(token, APP_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  })
 }
