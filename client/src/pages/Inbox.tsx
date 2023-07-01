@@ -42,6 +42,9 @@ export default function Inbox() {
                   key={msg.message._id}
                   username={msg.message.to?.username}
                   currentMsg={msg.message.messages[0].msg}
+                  id={msg.message.to._id}
+                  isOnline={msg.message.to.isOnline}
+                  roomId={msg.message.roomId}
                 />
               );
             })

@@ -17,7 +17,7 @@ import {
   InboxIcon,
   ChatBubbleLeftIcon,
 } from "@heroicons/react/24/outline";
-import UserContext from "../context/user.context";
+import UserContext, { UserContextType } from "../context/user.context";
 import { useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
 import Notification from "./Notification";
@@ -116,7 +116,7 @@ function ProfileMenu({ handleLogout }: any) {
 }
 
 export default function Header() {
-  const userContext = React.useContext(UserContext);
+  const userContext = React.useContext<UserContextType | null>(UserContext);
   const navigate = useNavigate();
   const signOut = useSignOut();
 
@@ -140,7 +140,7 @@ export default function Header() {
           href='#'
           className='mr-4 ml-2 cursor-pointer py-1.5 font-medium capitalize block md:hidden'
         >
-          {userContext?.user}
+          {userContext?.user.username}
         </Typography>
 
         <IconButton

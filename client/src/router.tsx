@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Inbox from "./pages/Inbox";
 import ListOfUsers from "./pages/ListOfUsers";
 import { RequireAuth } from "react-auth-kit";
+import ChatComposer from "./pages/ChatComposer";
 
 // router
 export const router = createBrowserRouter([
@@ -35,6 +36,10 @@ export const router = createBrowserRouter([
       {
         path: "inbox",
         element: <Inbox />,
+      },
+      {
+        path: "/dashboard/inbox/:id",
+        element: <ChatComposer />,
       },
     ],
   },

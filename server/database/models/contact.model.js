@@ -10,11 +10,11 @@ class ContactModel {
                 .populate('user')
                 .populate({path: 'contacts.message', populate: {
                     path: 'from',
-                    select: "username"
+                    select: ["username", "isOnline"]
                 }})
                 .populate({path: 'contacts.message', populate: {
                     path: 'to',
-                    select: "username"
+                    select: ["username", "isOnline"]
                 }}).exec();
             return all;
         } catch (error) {

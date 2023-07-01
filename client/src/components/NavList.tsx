@@ -45,15 +45,6 @@ export default function NavList(props: Props) {
           <InboxIcon className='h-5 w-5' />
         </ListItemPrefix>
         Inbox
-        <ListItemSuffix>
-          <Chip
-            value='14'
-            size='sm'
-            variant='ghost'
-            color='blue-gray'
-            className='rounded-full'
-          />
-        </ListItemSuffix>
       </ListItem>
       <PopoverHandler onClick={handleLogout}>
         <ListItem>

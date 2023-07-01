@@ -48,11 +48,11 @@ export default function Sidebar(props: Props) {
             <div className='mb-2 p-4 flex items-center gap-3'>
               <Avatar
                 variant='circular'
-                alt={userContext?.user}
+                alt={userContext?.user.username}
                 src='https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
               />
               <Typography variant='h5' color='blue-gray' className='capitalize'>
-                {userContext?.user}
+                {userContext?.user.username}
               </Typography>
             </div>
           )}

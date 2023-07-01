@@ -3,7 +3,11 @@ const { MessageSchema, ContactSchema } = require('../')
 class MessageModel {
     async GetAllMessages(roomId) {
         try {
-            const messages = await MessageSchema.findOne({ roomId: roomId });
+            const messages = await MessageSchema.aggregate([
+                { $match: { roomId: roomId } }, // match the document with the given roomId
+                { $unwind: "$messages" }, // Unwind the messages array
+                { $sort: { "messages.createdAt": -1 } } // Sort the messages based on the createdAt field in descending order
+            ]);
             return messages;
         } catch (error) {
            throw new Error(error);
