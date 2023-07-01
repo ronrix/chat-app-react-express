@@ -84,4 +84,16 @@ module.exports = (app) => {
             return res.status(400) .json({msg: error.message});
         }
     });
+
+    // get all users for display
+    app.get('/users', [ValidateToken], async (req, res) => {
+        try {
+            const { _id }  = req.user; // get the id of the user
+            const {data} = await service.GetAllUsers(_id);
+            console.log(data);
+            return res.status(200).json(data);
+        } catch (error) {
+            return res.status(400) .json({msg: error.message});
+        }
+    });
 }

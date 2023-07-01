@@ -18,6 +18,10 @@ class UserService {
                 const valid = await bcrypt.compare(password, hashedPassword);
                 if(valid) {
                     const token = await GenerateSignature({ email: user.email, _id: user._id });
+
+                    // set the online field to true
+                    await this.#SetToOnline(user._id);
+
                     return FormatData({id: user._id, token }); // return id with token
                 }
 
@@ -39,6 +43,10 @@ class UserService {
             if(passValid && emailValid) {
                 const user = await this.user.CreateUser({email, username, password});
                 const token = await GenerateSignature({ email: user.email, _id: user._id });
+
+                // set the online field to true
+                await this.#SetToOnline(user._id);
+
                 return FormatData({id: user._id, username: user.username, token }); // return id with token
             }
         } catch (error) {
@@ -63,6 +71,24 @@ class UserService {
             return FormatData(user);
         } catch (error) {
             throw new Error(error) ;
+        }
+    }
+
+    async GetAllUsers(id) {
+        try {
+            const users = await this.user.GetAll(id);
+            return FormatData(users);
+        } catch (error) {
+            throw new Error(error) ;
+        }
+    }
+
+    async #SetToOnline(id) {
+        try {
+            const user = await this.user.SetIsOnlineTrue(id);
+            return FormatData(user);
+        } catch (error) {
+           throw new Error(error) ;
         }
     }
 }

@@ -48,6 +48,26 @@ class UserModel {
             throw new Error(error);
         }
     }
+
+    // get all users
+    async GetAll(id) {
+        try {
+            // get all the users except the user who calls it
+            const res = await UserSchema.find({ _id: { $ne: id }});
+            return res;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    async SetIsOnlineTrue(_id) {
+        try {
+            const res = await UserSchema.updateOne({ _id }, { "isOnline": true })
+            return res;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 
 module.exports = UserModel;
