@@ -1,7 +1,7 @@
 const express = require('express');
 const { PORT } = require('./config');
 const cors = require('cors');
-const { user } = require('./api');
+const { user, chat } = require('./api');
 const { databaseConnection } = require('./database');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -22,6 +22,8 @@ const startServer = async () => {
 
     // api
     user(app);
+    chat(app);
+
     // error handling
     // app.use(HandleErrors);
 

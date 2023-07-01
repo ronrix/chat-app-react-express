@@ -12,12 +12,13 @@ const MessageSchema = new Schema({
         {
             _id: Schema.Types.ObjectId,
             msg: String,
+            sender: { type: Schema.Types.ObjectId, ref: 'user', require: false },
             createdAt: Schema.Types.Date,
         }
     ],
     roomId: String,
-    from: { type: Schema.Types.ObjectId, ref: 'user', require: true },  // the receiver of the chat
-    to: { type: Schema.Types.ObjectId, ref: 'user', require: true },  // the one who initiated the chat
+    from: { type: Schema.Types.ObjectId },  // the receiver of the chat
+    to: { type: Schema.Types.ObjectId },  // the one who initiated the chat
 }, { timestamps: true });
 
 module.exports = mongoose.model('message', MessageSchema);
