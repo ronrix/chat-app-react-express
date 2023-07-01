@@ -17,8 +17,8 @@ const MessageSchema = new Schema({
         }
     ],
     roomId: String,
-    from: { type: Schema.Types.ObjectId },  // the receiver of the chat
-    to: { type: Schema.Types.ObjectId },  // the one who initiated the chat
+    from: { type: Schema.Types.ObjectId, ref: 'user' },  // the receiver of the chat
+    to: { type: Schema.Types.ObjectId, ref: 'user' },  // the one who initiated the chat
 }, { timestamps: true });
 
 module.exports = mongoose.model('message', MessageSchema);

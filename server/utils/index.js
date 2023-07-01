@@ -54,7 +54,7 @@ module.exports.DecodeToken = async (token) => {
 
 // validate the token
 module.exports.ValidateToken = async (req, res, next) => {
-  const token = req.cookies.session;
+  const token = req.cookies._auth;
   if(!token) {
     return res.sendStatus(401);
   }

@@ -44,7 +44,7 @@ module.exports = (app) => {
     // Logout
     app.get('/signout', [ValidateToken], async (req, res) => {
         try {
-            const token = req.cookies['session']; // get the cookie first
+            const token = req.cookies._auth; // get the cookie first
             const { _id } = await DecodeToken(token);
             // making the isOnline field false
             const { data } = await service.Signout(_id); 
@@ -60,8 +60,8 @@ module.exports = (app) => {
     // get the user
     app.get('/user', [ValidateToken], async (req, res) => {
         try {
-            const userId = req.cookies.userId;
-            const user = await service.GetUser(userId);
+            const { _id } = req.user;
+            const user = await service.GetUser(_id);
             if(user) {
                 return res.status(200).json({ id: user.data._id, username: user.data.username, msg: 'Success' });
             }
@@ -90,7 +90,6 @@ module.exports = (app) => {
         try {
             const { _id }  = req.user; // get the id of the user
             const {data} = await service.GetAllUsers(_id);
-            console.log(data);
             return res.status(200).json(data);
         } catch (error) {
             return res.status(400) .json({msg: error.message});
