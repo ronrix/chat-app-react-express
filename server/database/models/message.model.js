@@ -1,10 +1,9 @@
-const { MessageSchema } = require('../')
+const { MessageSchema, ContactSchema } = require('../')
 
 class MessageModel {
     async GetAllMessages(roomId) {
         try {
             const messages = await MessageSchema.findOne({ roomId: roomId });
-            console.log(messages);
             return messages;
         } catch (error) {
            throw new Error(error);
@@ -20,8 +19,9 @@ class MessageModel {
                 // update the doc, push new message
                 const res = await MessageSchema.findOneAndUpdate(
                     { roomId }, 
-                    { $push: { messages: { msg: msg, sender: userId, createdAt: Date.now()  } }, },
+                    { $push: { messages: { msg: msg.trim(), sender: userId, createdAt: Date.now()  } }, },
                     { new: true });
+
                 return res;
             }
             // create new one
@@ -30,7 +30,7 @@ class MessageModel {
                 roomId, 
                 messages: [
                     {
-                        msg,
+                        msg: msg.trim(),
                         sender: userId,
                         createdAt: Date.now(),
                     }
@@ -39,9 +39,41 @@ class MessageModel {
                 to: idWhereToSend,
             }
             const res = await MessageSchema.create(data);
+
+            // create the contact since it's a new message
+            await this.#CheckAndCreateContact(res._id, userId);
+
             return res;
         } catch (error) {
             throw new Error(error);
+        }
+    }
+
+    // private method
+    // append to contact list
+    // check if the message is already exists in the contact list
+    async #CheckAndCreateContact(messageId, userId) {
+        try {
+            const isContactExist = await ContactSchema.exists({ user: userId });
+
+            // check if doc contact exists for this user
+            if(isContactExist) {
+                // check if the messageId already exists in the document
+                const exist = await ContactSchema.exists({ user: userId, contacts: { $elemMatch: { message: messageId }} });
+                console.log("exist: ", exist);
+                if(!exist) {
+                    // update the contact and append the new list
+                    await ContactSchema.updateOne({ user: userId }, { $push: { contacts: { message: messageId } } })
+                    return
+                }
+                return;
+            }
+
+            // add the message to the contact list if does not exist
+            await ContactSchema.create({ user: userId, contacts: [ { message: messageId } ] });
+            return
+        } catch (error) {
+           throw new Error(error) ;
         }
     }
 }

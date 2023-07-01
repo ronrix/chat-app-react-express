@@ -8,10 +8,10 @@ const Schema = mongoose.Schema;
 const ContactSchema = new Schema({
     contacts: [
         {
-            _id: Schema.Types.ObjectId
+            message: { type: Schema.Types.ObjectId, ref: 'message' }, // message id
         }
     ],
-    user: { type: Schema.Types.ObjectId, ref: 'user', require: true },  // reference of the user 
+    user: { type: Schema.Types.ObjectId, ref: 'user' },  // reference of the user 
 }, { timestamps: true });
 
 module.exports = mongoose.model('contacts', ContactSchema);

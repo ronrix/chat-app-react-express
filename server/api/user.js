@@ -1,8 +1,9 @@
-const UserService = require("../services/user.service");
+const { UserService, ContactService } = require("../services");
 const { DecodeToken, ValidateToken } = require("../utils");
 
 module.exports = (app) => {
     const service = new UserService();
+    const contactService = new ContactService();
 
     // Login
     app.post('/signin', async (req, res) => {
@@ -61,7 +62,6 @@ module.exports = (app) => {
         try {
             const userId = req.cookies.userId;
             const user = await service.GetUser(userId);
-            console.log(user);
             if(user) {
                 return res.status(200).json({ id: user.data._id, username: user.data.username, msg: 'Success' });
             }
@@ -70,6 +70,17 @@ module.exports = (app) => {
             // clear the cookies
             res.clearCookie("session"); // clear the session cookie
             res.clearCookie("userId"); // clear the session cookie
+            return res.status(400) .json({msg: error.message});
+        }
+    });
+
+    // contact lists
+    app.get('/contacts', [ValidateToken], async (req, res) => {
+        try {
+            const { _id } = req.user; // get the id of the user session
+            const contacts = await contactService.GetAllContactLists(_id);
+            return res.status(200).json(contacts);
+        } catch (error) {
             return res.status(400) .json({msg: error.message});
         }
     });

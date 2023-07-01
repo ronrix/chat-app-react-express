@@ -1,5 +1,6 @@
 module.exports = {
     UserModel: require('./user.model'),
-    // MessageModel: require('./messages'),
+    ContactModel: require('./contact.model'),
+    MessageModel: require('./message.model'),
     // NoficationModel: require('./messages'),
 }
