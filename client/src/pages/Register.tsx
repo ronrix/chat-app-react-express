@@ -10,10 +10,12 @@ import { toast, ToastContainer } from "react-toastify";
 import Cookies from "universal-cookie";
 import axios from "../utils/axios";
 import { Link, useNavigate } from "react-router-dom";
+import { useSignIn } from "react-auth-kit";
 
 export default function Register() {
   const cookies = new Cookies();
   const navigate = useNavigate();
+  const signIn = useSignIn();
   const [loading, setLoading] = useState<boolean>(false);
   const [fields, setFields] = useState<{
     email: string;
@@ -45,6 +47,13 @@ export default function Register() {
       if (data.token) {
         // store the id to cookie
         cookies.set("userId", data.id);
+        // store the id to cookie
+        signIn({
+          token: data.token,
+          expiresIn: 3600 * 2,
+          tokenType: "Bearer",
+          authState: { email: fields.email },
+        });
 
         setLoading(false); // set the loading to false
         return navigate("/dashboard");
