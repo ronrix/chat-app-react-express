@@ -4,11 +4,9 @@ import {
   ChatBubbleLeftIcon,
 } from "@heroicons/react/24/solid";
 import {
-  Chip,
   List,
   ListItem,
   ListItemPrefix,
-  ListItemSuffix,
   PopoverHandler,
 } from "@material-tailwind/react";
 import React from "react";
@@ -26,15 +24,6 @@ export default function NavList(props: Props) {
   return (
     <List>
       <hr className='my-2 border-blue-gray-50' />
-      <ListItem
-        onClick={() => navigate("/dashboard")}
-        className={`${!location.pathname.split("/")[2] ? "bg-gray-100" : ""}`}
-      >
-        <ListItemPrefix>
-          <ChatBubbleLeftIcon className='h-5 w-5' />
-        </ListItemPrefix>
-        Chat Suggestions
-      </ListItem>
       <ListItem
         onClick={() => navigate("/dashboard/inbox")}
         className={`${

@@ -3,7 +3,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Inbox from "./pages/Inbox";
-import ListOfUsers from "./pages/ListOfUsers";
 import { RequireAuth } from "react-auth-kit";
 import ChatComposer from "./pages/ChatComposer";
 
@@ -29,10 +28,6 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      {
-        path: "",
-        element: <ListOfUsers />,
-      },
       {
         path: "inbox",
         element: <Inbox />,
