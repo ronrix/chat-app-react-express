@@ -21,6 +21,7 @@ import UserContext from "../context/user.context";
 import { useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
 import Notification from "./Notification";
+import { useSignOut } from "react-auth-kit";
 
 // profile menu component
 const profileMenuItems = [
@@ -117,11 +118,13 @@ function ProfileMenu({ handleLogout }: any) {
 export default function Header() {
   const userContext = React.useContext(UserContext);
   const navigate = useNavigate();
+  const signOut = useSignOut();
 
   const handleLogout = async () => {
     try {
       const { data } = await axios.get("/signout");
       console.log(data);
+      signOut();
       navigate("/signin");
     } catch (error) {
       console.log(error);

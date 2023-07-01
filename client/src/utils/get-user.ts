@@ -11,6 +11,7 @@ export default async function GetUser() {
     } catch (error: any) {
       console.log(error);
       new Cookies().remove('userId'); // remove the userId
+      new Cookies().remove('session'); // remove the session
       return false;
     }
   }
