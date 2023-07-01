@@ -5,7 +5,7 @@ export type MessageContextType = {
     setChatUser: React.Dispatch<React.SetStateAction<{
         id: string;
         username: string;
-        roomId: boolean;
+        roomId: string;
         isOnline: boolean;
     }>>;
  }

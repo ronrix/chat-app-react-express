@@ -6,7 +6,7 @@ export default async function GetUser() {
     try {
       const { data } = await axios.get("/user");
       if (data.msg === "Success") {
-        return data.username;
+        return data;
       }
     } catch (error: any) {
       console.log(error);

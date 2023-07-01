@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Chat from "../components/Chat";
 import { List, Card, Spinner } from "@material-tailwind/react";
 import axios from "../utils/axios";
-import { toast, ToastContainer } from "react-toastify";
 import ErrorMessage from "../components/ErrorMessage";
+import UserContext, { UserContextType } from "../context/user.context";
 
 export default function Inbox() {
   const [contactLists, setContactLists] = useState<[{ data: any }]>();
   const [loading, setLoading] = useState<boolean>(true);
+  const userContext = useContext<UserContextType | null>(UserContext);
 
   // get all messages by id
   const getAllMessages = async () => {
@@ -20,7 +21,6 @@ export default function Inbox() {
     } catch (error: any) {
       console.log(error);
       setLoading(false);
-      toast.error(error?.response?.data?.msg);
     }
   };
 
@@ -37,13 +37,22 @@ export default function Inbox() {
             <Spinner className='mx-auto mt-10' />
           ) : contactLists?.contacts?.length ? (
             contactLists?.contacts?.map((msg: any) => {
+              const username =
+                msg.message.to?._id === userContext?.user.id
+                  ? msg.message.from?.username
+                  : msg.message.to?.username;
+
+              const isOnline =
+                msg.message.to?._id === userContext?.user.id
+                  ? msg.message.from?.isOnline
+                  : msg.message.to?.isOnline;
               return (
                 <Chat
                   key={msg.message._id}
-                  username={msg.message.to?.username}
+                  username={username} // display/pass the right username by checking if the userId is not equal to "to" or "from", then that's the thing we want to display
                   currentMsg={msg.message.messages[0].msg}
                   id={msg.message.to._id}
-                  isOnline={msg.message.to.isOnline}
+                  isOnline={isOnline}
                   roomId={msg.message.roomId}
                 />
               );
@@ -53,7 +62,6 @@ export default function Inbox() {
           )}
         </List>
       </Card>
-      <ToastContainer />
     </div>
   );
 }

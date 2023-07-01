@@ -41,7 +41,11 @@ export default function Chats(props: Props) {
             className='capitalize  flex items-center gap-4'
           >
             <span>{username}</span>
-            <Badge color={isOnline ? "green" : "gray"}></Badge>
+            <Badge
+              overlap='circular'
+              color={isOnline ? "green" : "gray"}
+              placement='top-start'
+            ></Badge>
           </Typography>
           <Typography
             variant='small'

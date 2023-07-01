@@ -11,6 +11,7 @@ import ErrorMessage from "./ErrorMessage";
 import UserContext, { UserContextType } from "../context/user.context";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 type Props = {
   msgs: [];
@@ -48,18 +49,21 @@ export default function BubbleMessages(props: Props) {
         {loading ? (
           <Spinner className='mx-auto mt-10' />
         ) : msgs.length ? (
-          msgs.map((msg: any) => {
+          msgs.map((msg: any, i: number) => {
             return (
-              <Chip
-                key={msg._id}
-                value={msg.messages.msg}
+              <div
+                key={i}
                 className={`w-fit tracking-wider ${
                   msg.messages.sender == userContext?.user.id
                     ? "self-end"
                     : "self-start"
                 }`}
-                size='lg'
-              />
+              >
+                <span className='text-[12px] text-gray-300'>
+                  {moment(msg.messages.createdAt).startOf("hour").fromNow()}
+                </span>
+                <Chip value={msg.messages.msg} size='lg' />
+              </div>
             );
           })
         ) : (
