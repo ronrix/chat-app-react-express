@@ -2,8 +2,9 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
-import Protected from "./components/Protected";
 import Cookies from "universal-cookie";
+import Inbox from "./pages/Inbox";
+import ListOfUsers from "./pages/ListOfUsers";
 
 // get the user id in the cookie
 const cookie = new Cookies();
@@ -25,10 +26,16 @@ export const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: (
-      <Protected key='dashboard'>
-        <Dashboard />
-      </Protected>
-    ),
+    element: <Dashboard />,
+    children: [
+      {
+        path: "",
+        element: <ListOfUsers />,
+      },
+      {
+        path: "inbox",
+        element: <Inbox />,
+      },
+    ],
   },
 ]);
