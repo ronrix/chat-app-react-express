@@ -1,12 +1,20 @@
 import React, { useState } from "react";
-import { Input, Button, Card, Typography } from "@material-tailwind/react";
+import {
+  Input,
+  Button,
+  Card,
+  Typography,
+  Spinner,
+} from "@material-tailwind/react";
 import { toast, ToastContainer } from "react-toastify";
 import Cookies from "universal-cookie";
 import axios from "../utils/axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
   const cookies = new Cookies();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(false);
   const [fields, setFields] = useState<{
     email: string;
     password: string;
@@ -23,6 +31,7 @@ export default function Register() {
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true); // set the loading to true
 
     try {
       // fetch login
@@ -36,12 +45,14 @@ export default function Register() {
       if (data.token) {
         // store the id to cookie
         cookies.set("userId", data.id);
-        window.location.reload(); // reloading the page to invoke the Protected component
-        return;
+
+        setLoading(false); // set the loading to false
+        return navigate("/dashboard");
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.msg);
       console.log(error);
+      setLoading(false); // set the loading to false
     }
   };
   return (
@@ -82,7 +93,7 @@ export default function Register() {
             />
           </div>
           <Button type='submit' className='mt-6' fullWidth>
-            register
+            {loading ? <Spinner className='mx-auto h-4 w-4' /> : "Register"}
           </Button>
           <Typography color='gray' className='mt-4 text-center font-normal'>
             Already have an account?

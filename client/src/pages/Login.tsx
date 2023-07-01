@@ -1,12 +1,21 @@
 import React, { useState } from "react";
-import { Input, Button, Card, Typography } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import {
+  Input,
+  Button,
+  Card,
+  Typography,
+  Spinner,
+} from "@material-tailwind/react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
 import { toast, ToastContainer } from "react-toastify";
 import Cookies from "universal-cookie";
+import ValidateAuthFields from "../utils/validate-inputs";
 
 export default function Login() {
   const cookies = new Cookies();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(false);
   const [fields, setFields] = useState<{ email: string; password: string }>({
     email: "",
     password: "",
@@ -19,6 +28,14 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // validate input fields
+    const { valid, msg } = ValidateAuthFields(fields);
+    if (!valid) {
+      toast.error(msg);
+      return;
+    }
+    setLoading(true); // set the loading to true
+
     try {
       // fetch login
       const { data } = await axios.post("/signin", {
@@ -30,12 +47,15 @@ export default function Login() {
       if (data.token) {
         // store the id to cookie
         cookies.set("userId", data.id);
-        window.location.reload(); // reloading the page to invoke the Protected component
-        return;
+
+        setLoading(false); // set the loading to false
+        return navigate("/dashboard", { replace: true });
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.msg);
       console.log(error);
+
+      setLoading(false); // set the loading to false
     }
   };
 
@@ -70,7 +90,7 @@ export default function Login() {
             />
           </div>
           <Button type='submit' className='mt-6' fullWidth>
-            Sign in
+            {loading ? <Spinner className='mx-auto h-4 w-4' /> : "Sign in"}
           </Button>
           <Typography color='gray' className='mt-4 text-center font-normal'>
             Don't have an account?
