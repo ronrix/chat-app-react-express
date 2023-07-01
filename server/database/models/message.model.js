@@ -44,8 +44,9 @@ class MessageModel {
             }
             const res = await MessageSchema.create(data);
 
-            // create the contact since it's a new message
+            // create or append to the contact lists of both sender and receiver
             await this.#CheckAndCreateContact(res._id, userId);
+            await this.#CheckAndCreateContactToIdWhereToSend(res._id, idWhereToSend);
 
             return res;
         } catch (error) {
@@ -64,7 +65,6 @@ class MessageModel {
             if(isContactExist) {
                 // check if the messageId already exists in the document
                 const exist = await ContactSchema.exists({ user: userId, contacts: { $elemMatch: { message: messageId }} });
-                console.log("exist: ", exist);
                 if(!exist) {
                     // update the contact and append the new list
                     await ContactSchema.updateOne({ user: userId }, { $push: { contacts: { message: messageId } } })
@@ -75,6 +75,32 @@ class MessageModel {
 
             // add the message to the contact list if does not exist
             await ContactSchema.create({ user: userId, contacts: [ { message: messageId } ] });
+            return
+        } catch (error) {
+           throw new Error(error) ;
+        }
+    }
+
+    // private method
+    // append or create new contact to the list of the "idWhereToSend"
+    async #CheckAndCreateContactToIdWhereToSend(messageId, idWhereTosend) {
+        try {
+            const isContactExist = await ContactSchema.exists({ user: idWhereTosend });
+
+            // check if doc contact exists for this user
+            if(isContactExist) {
+                // check if the messageId already exists in the document
+                const exist = await ContactSchema.exists({ user: idWhereToSend, contacts: { $elemMatch: { message: messageId }} });
+                if(!exist) {
+                    // update the contact and append the new list
+                    await ContactSchema.updateOne({ user: idWhereTosend }, { $push: { contacts: { message: messageId } } })
+                    return
+                }
+                return;
+            }
+
+            // add the message to the contact list if does not exist
+            await ContactSchema.create({ user: idWhereTosend, contacts: [ { message: messageId } ] });
             return
         } catch (error) {
            throw new Error(error) ;
