@@ -1,10 +1,4 @@
-import {
-  Avatar,
-  Badge,
-  Chip,
-  IconButton,
-  Spinner,
-} from "@material-tailwind/react";
+import { Avatar, Badge, IconButton, Spinner } from "@material-tailwind/react";
 import { useContext, useRef, useEffect } from "react";
 import { MessageContext, MessageContextType } from "../context/message.context";
 import ErrorMessage from "./ErrorMessage";
@@ -71,11 +65,13 @@ export default function BubbleMessages(props: Props) {
                 <span className='text-[12px] text-gray-300'>
                   {moment(msg.createdAt).startOf("hour").fromNow()}
                 </span>
-                <Chip
-                  value={msg.msg}
-                  size='lg'
-                  className='normal-case font-poppins'
-                />
+                <div
+                  className={`font-poppins p-2 shadow rounded-md ${
+                    msg.sender === userContext?.user.id ? "bg-blue-300" : ""
+                  }`}
+                >
+                  <span dangerouslySetInnerHTML={{ __html: msg.msg }}></span>
+                </div>
               </div>
             );
           })

@@ -1,11 +1,15 @@
 import { useState, useEffect, useContext } from "react";
-import { IconButton, Textarea } from "@material-tailwind/react";
+import { IconButton } from "@material-tailwind/react";
 import BubbleMessages from "../components/BubbleMessages";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { ToastContainer } from "react-toastify";
 import { MessageContext, MessageContextType } from "../context/message.context";
 import { socket } from "../App";
 import { useAuthUser } from "react-auth-kit";
+
+// react quill
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.bubble.css";
 
 export default function ChatComposer() {
   const [msgs, setMsgs] = useState<[]>([]);
@@ -59,13 +63,12 @@ export default function ChatComposer() {
       {/* composer */}
       <div className='rounded-xl relative border w-full'>
         <form onSubmit={handleSubmitNewMsg}>
-          <Textarea
-            label='Message'
-            className='pr-16 w-full'
-            onChange={(e) => setComposedMsg(e.target.value)}
+          <ReactQuill
+            theme='bubble'
+            onChange={setComposedMsg}
             value={composedMsg}
           />
-          <div className='absolute top-1/2 -translate-y-1/2 rounded-full right-2'>
+          <div className='absolute bottom-0 rounded-full right-2'>
             <IconButton type='submit' variant='text'>
               <PaperAirplaneIcon className='text-blue-500 h-8 w-8' />
             </IconButton>
