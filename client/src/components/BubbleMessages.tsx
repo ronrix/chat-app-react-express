@@ -2,10 +2,10 @@ import { Avatar, Badge, IconButton, Spinner } from "@material-tailwind/react";
 import { useContext, useRef, useEffect } from "react";
 import { MessageContext, MessageContextType } from "../context/message.context";
 import ErrorMessage from "./ErrorMessage";
-import UserContext, { UserContextType } from "../context/user.context";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { useAuthUser } from "react-auth-kit";
 
 type Props = {
   msgs: [];
@@ -16,15 +16,15 @@ export default function BubbleMessages(props: Props) {
   const { msgs, loading } = props;
   const navigate = useNavigate();
   const messageContext = useContext<MessageContextType | null>(MessageContext);
-  const userContext = useContext<UserContextType | null>(UserContext);
   const chatboxRef = useRef<HTMLElement>(null);
+  const auth = useAuthUser();
 
   useEffect(() => {
     // scroll chat box to the bottom
-    if (chatboxRef.current) {
-      chatboxRef.current.scrollTop = chatboxRef.current?.scrollHeight;
+    if (chatboxRef.current && chatboxRef.current?.scrollHeight > 600) {
+      chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
     }
-  });
+  }, [chatboxRef, loading, msgs]);
 
   return (
     <div className='h-full flex flex-col'>
@@ -59,7 +59,7 @@ export default function BubbleMessages(props: Props) {
               <div
                 key={i}
                 className={`w-fit tracking-wider ${
-                  msg.sender == userContext?.user.id ? "self-end" : "self-start"
+                  msg.sender == auth()?.id ? "self-end" : "self-start"
                 }`}
               >
                 <span className='text-[12px] text-gray-300'>
@@ -67,7 +67,7 @@ export default function BubbleMessages(props: Props) {
                 </span>
                 <div
                   className={`font-poppins p-2 shadow rounded-md ${
-                    msg.sender === userContext?.user.id ? "bg-blue-300" : ""
+                    msg.sender === auth()?.id ? "bg-blue-300" : ""
                   }`}
                 >
                   <span dangerouslySetInnerHTML={{ __html: msg.msg }}></span>

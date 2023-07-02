@@ -8,13 +8,14 @@ import {
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { MessageContext, MessageContextType } from "../context/message.context";
+import { socket } from "../pages/Dashboard";
 
 type Props = {
   username: string;
   currentMsg: string;
   id: string;
   isOnline: boolean;
-  roomId: boolean;
+  roomId: string;
 };
 
 export default function Chats(props: Props) {
@@ -22,6 +23,7 @@ export default function Chats(props: Props) {
   const messageContext = useContext<MessageContextType | null>(MessageContext);
 
   const handleSettingActiveMsg = () => {
+    socket.emit("join_room", { roomId, id });
     messageContext?.setChatUser({ id, username, isOnline, roomId });
   };
   return (
@@ -41,11 +43,7 @@ export default function Chats(props: Props) {
             className='capitalize  flex items-center gap-4'
           >
             <span>{username}</span>
-            <Badge
-              overlap='circular'
-              color={isOnline ? "green" : "gray"}
-              placement='top-start'
-            ></Badge>
+            <Badge color={isOnline ? "green" : "gray"}></Badge>
           </Typography>
           <Typography
             variant='small'

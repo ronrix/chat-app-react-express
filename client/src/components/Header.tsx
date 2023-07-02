@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, createElement, useContext } from "react";
 import {
   Navbar,
   Typography,
@@ -14,25 +14,14 @@ import {
   ChevronDownIcon,
   PowerIcon,
   Bars2Icon,
-  InboxIcon,
-  ChatBubbleLeftIcon,
 } from "@heroicons/react/24/outline";
 import UserContext, { UserContextType } from "../context/user.context";
 import { useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
-import Notification from "./Notification";
 import { useSignOut } from "react-auth-kit";
 
 // profile menu component
 const profileMenuItems = [
-  {
-    label: "Chat Suggestions",
-    icon: ChatBubbleLeftIcon,
-  },
-  {
-    label: "Inbox",
-    icon: InboxIcon,
-  },
   {
     label: "Sign Out",
     icon: PowerIcon,
@@ -40,17 +29,10 @@ const profileMenuItems = [
 ];
 
 function ProfileMenu({ handleLogout }: any) {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const closeMenu = () => setIsMenuOpen(false);
-  const navigate = useNavigate();
 
   const handleNavItem = (type: string) => {
-    if (type === "Inbox") {
-      navigate("/dashboard/inbox");
-    }
-    if (type === "Chat Suggestions") {
-      navigate("/dashboard/");
-    }
     if (type === "Sign Out") {
       handleLogout();
     }
@@ -94,7 +76,7 @@ function ProfileMenu({ handleLogout }: any) {
                     : ""
                 }`}
               >
-                {React.createElement(icon, {
+                {createElement(icon, {
                   className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
                   strokeWidth: 2,
                 })}
@@ -116,18 +98,18 @@ function ProfileMenu({ handleLogout }: any) {
 }
 
 export default function Header() {
-  const userContext = React.useContext<UserContextType | null>(UserContext);
+  const userContext = useContext<UserContextType | null>(UserContext);
   const navigate = useNavigate();
   const signOut = useSignOut();
 
   const handleLogout = async () => {
     try {
       const { data } = await axios.get("/signout");
-      console.log(data);
       signOut();
       navigate("/signin");
     } catch (error) {
       console.log(error);
+      signOut();
       navigate("/signin");
     }
   };
@@ -151,7 +133,6 @@ export default function Header() {
         >
           <Bars2Icon className='h-6 w-6' />
         </IconButton>
-        <Notification />
         <ProfileMenu handleLogout={handleLogout} />
       </div>
     </Navbar>
