@@ -13,9 +13,6 @@ const UserSchema = new Schema({
     salt: String, // for password hashing
     avatar: String, // url or path to image
     isOnline: Boolean,
-    contacts: [{ type: Schema.Types.ObjectId, ref: 'contact', require: true }], 
-    messages: [{ type: Schema.Types.ObjectId, ref: 'message', require: true }],
-    notifications: [{ type: Schema.Types.ObjectId, ref: 'notification', require: true }],
 }, 
 { 
      toJSON: { // excludes stated fields on query

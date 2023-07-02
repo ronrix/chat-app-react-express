@@ -7,15 +7,18 @@ class ContactModel {
         try {
             // get contact lists with user reference and message reference limited to 10 only
             const all = await ContactSchema.findOne({ user: id })
-                .populate('user')
-                .populate({path: 'contacts.message', populate: {
-                    path: 'from',
-                    select: ["username", "isOnline"]
-                }})
-                .populate({path: 'contacts.message', populate: {
-                    path: 'to',
-                    select: ["username", "isOnline"]
-                }}).exec();
+            .populate({
+              path: 'contacts.message',
+              populate: [
+                { path: 'from', select: ['_id', 'username', 'isOnline'], options: { sort: { createdAt: -1 } } },
+                { path: 'to', select: ['_id', 'username', 'isOnline'], options: { sort: { createdAt: -1 } } }
+              ],
+            })
+            .exec();
+
+            // sort the contacts in descending order
+            all.contacts.sort((a, b) => b.createdAt - a.createdAt);
+
             return all;
         } catch (error) {
            throw new Error(error);

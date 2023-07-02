@@ -9,6 +9,7 @@ const ContactSchema = new Schema({
     contacts: [
         {
             message: { type: Schema.Types.ObjectId, ref: 'message' }, // message id
+            createdAt: { type: Schema.Types.Date }, 
         }
     ],
     user: { type: Schema.Types.ObjectId, ref: 'user' },  // reference of the user 
