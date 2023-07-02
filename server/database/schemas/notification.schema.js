@@ -10,11 +10,13 @@ const NotificationSchema = new Schema({
     notifications: [
         {
             _id: Schema.Types.ObjectId, 
-            msg: String,
+            roomId: {type: Schema.Types.String },
+            senderId: { type: Schema.Types.ObjectId, ref: 'user' }, // id of the user who sends a message
+            isViewed: { type: Schema.Types.Boolean, default: false },
             createdAt: Schema.Types.Date,
         }
     ],
-    user: { type: Schema.Types.ObjectId, ref: 'user' }, 
+    user: { type: Schema.Types.ObjectId, ref: 'user' },  // user who (this doc)  belongs to
 }, { timestamps: true });
 
 module.exports = mongoose.model('notification', NotificationSchema );

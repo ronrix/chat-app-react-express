@@ -1,4 +1,5 @@
-const { MessageSchema, ContactSchema, UserSchema } = require('../')
+const { MessageSchema, ContactSchema, UserSchema, NotificationSchema } = require('../')
+const mongoose = require('mongoose');
 
 class MessageModel {
     async GetAllMessages(roomId) {
@@ -44,7 +45,7 @@ class MessageModel {
                     { $push: { messages: { msg: msg.trim(), sender: userId, createdAt: Date.now()  } }, },
                     { new: true });
 
-                return res;
+                  return res;
             }
             // create new one
             // format data
@@ -65,6 +66,9 @@ class MessageModel {
             // create or append to the contact lists of both sender and receiver
             await this.#CheckAndCreateContact(res._id, userId);
             await this.#CheckAndCreateContactToIdWhereToSend(res._id, idWhereToSend);
+
+            // insert notification for the msg receiver
+            // await this.#InsertNewNotification(roomId, userId, idWhereToSend);
 
             return res;
         } catch (error) {
@@ -97,6 +101,9 @@ class MessageModel {
                 await this.#CheckAndCreateContact(res._id, userId);
                 await this.#CheckAndCreateContactToIdWhereToSend(res._id, isEmailExists._id);
 
+                // insert notification for the msg receiver
+                // await this.#InsertNewNotification(roomId, userId, isEmailExists._id);
+
                 return res;
             }
 
@@ -120,14 +127,14 @@ class MessageModel {
                 const exist = await ContactSchema.exists({ user: userId, contacts: { $elemMatch: { message: messageId }} });
                 if(!exist) {
                     // update the contact and append the new list
-                    await ContactSchema.updateOne({ user: userId }, { $push: { contacts: { message: messageId } } })
+                    await ContactSchema.updateOne({ user: userId }, { $push: { contacts: { message: messageId, createdAt: Date.now() } } })
                     return
                 }
                 return;
             }
 
             // add the message to the contact list if does not exist
-            await ContactSchema.create({ user: userId, contacts: [ { message: messageId } ] });
+            await ContactSchema.create({ user: userId, contacts: [ { message: messageId, createdAt: Date.now() } ] });
             return
         } catch (error) {
            throw new Error(error) ;
@@ -148,17 +155,51 @@ class MessageModel {
                 // const exist = await ContactSchema.exists({ user: idWhereToSend, contacts: { $elemMatch: { message: messageId }} });
                 // if(!exist) {
                     // update the contact and append the new list
-                    await ContactSchema.updateOne({ user: idWhereTosend }, { $push: { contacts: { message: messageId } } })
+                    await ContactSchema.updateOne({ user: idWhereTosend }, { $push: { contacts: { message: messageId, createdAt: Date.now() } } })
                 //     return
                 // }
                 return;
             }
 
             // add the message to the contact list if does not exist
-            await ContactSchema.create({ user: idWhereTosend, contacts: [ { message: messageId } ] });
+            await ContactSchema.create({ user: idWhereTosend, contacts: [ { message: messageId, createdAt: Date.now() } ] });
             return
         } catch (error) {
            throw new Error(error) ;
+        }
+    }
+
+    // insert new notification
+    // userId is the id where to store the notification
+    // insert the notification only if user is not in the room
+    async #InsertNewNotification(roomId, senderId, userId) {
+        try {
+            console.log(roomId, senderId, userId);
+            // check if the 'userId' has notification table 
+            const exists = await NotificationSchema.findOne({ user: userId });
+
+            if(exists) {
+                // append the new notification
+                await NotificationSchema.updateOne({ user: userId }, { $push: { notifications: { _id: new mongoose.Types.ObjectId(), roomId, senderId, createdAt: Date.now() } } });
+                return;
+            }
+            
+            // create new notification table
+            const data = {
+                user: userId, 
+                notifications: [
+                    {
+                        _id: new mongoose.Types.ObjectId(),
+                        roomId,
+                        senderId,
+                        createdAt: Date.now(),
+                    }
+                ],
+            }
+            await NotificationSchema.create(data);
+            return ;
+        } catch (error) {
+            throw new Error(error) ;
         }
     }
 }
