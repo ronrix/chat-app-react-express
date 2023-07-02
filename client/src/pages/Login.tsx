@@ -57,7 +57,7 @@ export default function Login() {
         });
 
         setLoading(false); // set the loading to false
-        return navigate("/dashboard", { replace: true });
+        window.location.href = "/dashboard";
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.msg);

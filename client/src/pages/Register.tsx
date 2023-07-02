@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Input,
   Button,
@@ -10,11 +10,12 @@ import { toast, ToastContainer } from "react-toastify";
 import Cookies from "universal-cookie";
 import axios from "../utils/axios";
 import { Link, useNavigate } from "react-router-dom";
-import { useSignIn } from "react-auth-kit";
+import { useIsAuthenticated, useSignIn } from "react-auth-kit";
 
 export default function Register() {
   const cookies = new Cookies();
   const navigate = useNavigate();
+  const isAuthenticated = useIsAuthenticated();
   const signIn = useSignIn();
   const [loading, setLoading] = useState<boolean>(false);
   const [fields, setFields] = useState<{
@@ -56,7 +57,7 @@ export default function Register() {
         });
 
         setLoading(false); // set the loading to false
-        return navigate("/dashboard");
+        window.location.href = "/dashboard";
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.msg);
@@ -64,6 +65,14 @@ export default function Register() {
       setLoading(false); // set the loading to false
     }
   };
+
+  useEffect(() => {
+    // check auth status then redirect to '/dashboard'
+    if (isAuthenticated()) {
+      return navigate("/dashboard");
+    }
+  }, []);
+
   return (
     <div className='flex items-center justify-center h-screen'>
       <Card color='transparent' shadow={false}>
