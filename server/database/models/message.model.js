@@ -6,7 +6,25 @@ class MessageModel {
             const messages = await MessageSchema.aggregate([
                 { $match: { roomId: roomId } }, // match the document with the given roomId
                 { $unwind: "$messages" }, // Unwind the messages array
-                { $sort: { "messages.createdAt": -1 } } // Sort the messages based on the createdAt field in descending order
+                { $sort: { "messages.createdAt": 1 } }, // Sort the messages based on the createdAt field in descending order
+                {
+                    $group: {
+                    _id: "$_id",
+                    roomId: { $first: "$roomId" },
+                    from: { $first: "$from" },
+                    to: { $first: "$to" },
+                    messages: { $push: "$messages" }
+                    }
+                },
+                {
+                    $project: {
+                    _id: 1,
+                    roomId: 1,
+                    from: 1,
+                    to: 1,
+                    messages: 1
+                    }
+                }
             ]);
             return messages;
         } catch (error) {

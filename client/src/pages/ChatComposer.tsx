@@ -2,34 +2,55 @@ import { useState, useEffect, useContext } from "react";
 import { IconButton, Textarea } from "@material-tailwind/react";
 import BubbleMessages from "../components/BubbleMessages";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import { ToastContainer, toast } from "react-toastify";
-import axios from "../utils/axios";
+import { ToastContainer } from "react-toastify";
 import { MessageContext, MessageContextType } from "../context/message.context";
+import { socket } from "../App";
+import { useAuthUser } from "react-auth-kit";
 
-export default function Example() {
+export default function ChatComposer() {
   const [msgs, setMsgs] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const messageContext = useContext<MessageContextType | null>(MessageContext);
 
-  // fetch for all the messages
-  const getAllMsgs = async () => {
-    try {
-      const { data } = await axios.get("/messages", {
-        params: {
-          roomId: messageContext?.chatUser?.roomId,
-        },
+  const [composedMsg, setComposedMsg] = useState<string>("");
+  const auth = useAuthUser();
+
+  const handleSubmitNewMsg = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (composedMsg.length) {
+      socket.emit("send_msg", {
+        roomId: messageContext?.chatUser.roomId,
+        msg: composedMsg,
+        userId: auth()?.id,
+        idWhereToSend: messageContext?.chatUser.id,
       });
-      setMsgs(data.data);
-      setLoading(false);
-    } catch (error: any) {
-      setLoading(false);
-      toast.error(error?.response?.data?.msg);
+      setComposedMsg("");
     }
+    return;
+  };
+
+  // this intialize the event listener
+  const socketListener = () => {
+    socket.emit("get_all_msgs", messageContext?.chatUser.roomId);
   };
 
   useEffect(() => {
-    getAllMsgs();
-  }, []);
+    let isMounted = true;
+    socketListener();
+    // Set up the event listener
+    socket.on("get_all_msgs", ({ data }) => {
+      if (isMounted && data) {
+        setMsgs(data);
+        setLoading(false);
+      }
+    });
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      isMounted = false;
+      socket.off("get_all_msgs");
+    };
+  }, []); // Empty dependency array to run the effect only once during component mount
 
   return (
     <main className='mt-8 flex-1 flex flex-col'>
@@ -37,12 +58,19 @@ export default function Example() {
 
       {/* composer */}
       <div className='rounded-xl relative border w-full'>
-        <Textarea label='Message' className='pr-16 w-full' />
-        <div className='absolute top-1/2 -translate-y-1/2 rounded-full right-2'>
-          <IconButton variant='text'>
-            <PaperAirplaneIcon className='text-blue-500 h-8 w-8' />
-          </IconButton>
-        </div>
+        <form onSubmit={handleSubmitNewMsg}>
+          <Textarea
+            label='Message'
+            className='pr-16 w-full'
+            onChange={(e) => setComposedMsg(e.target.value)}
+            value={composedMsg}
+          />
+          <div className='absolute top-1/2 -translate-y-1/2 rounded-full right-2'>
+            <IconButton type='submit' variant='text'>
+              <PaperAirplaneIcon className='text-blue-500 h-8 w-8' />
+            </IconButton>
+          </div>
+        </form>
       </div>
       <ToastContainer />
     </main>

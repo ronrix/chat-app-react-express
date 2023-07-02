@@ -5,7 +5,7 @@ import {
   IconButton,
   Spinner,
 } from "@material-tailwind/react";
-import { useContext } from "react";
+import { useContext, useRef, useEffect } from "react";
 import { MessageContext, MessageContextType } from "../context/message.context";
 import ErrorMessage from "./ErrorMessage";
 import UserContext, { UserContextType } from "../context/user.context";
@@ -23,9 +23,17 @@ export default function BubbleMessages(props: Props) {
   const navigate = useNavigate();
   const messageContext = useContext<MessageContextType | null>(MessageContext);
   const userContext = useContext<UserContextType | null>(UserContext);
+  const chatboxRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    // scroll chat box to the bottom
+    if (chatboxRef.current) {
+      chatboxRef.current.scrollTop = chatboxRef.current?.scrollHeight;
+    }
+  });
 
   return (
-    <div className='h-full'>
+    <div className='h-full flex flex-col'>
       <header className='flex items-center gap-3'>
         <IconButton variant='text' onClick={() => navigate(-1)}>
           <ChevronLeftIcon className='h-5 w-5 text-gray-500' />
@@ -45,7 +53,10 @@ export default function BubbleMessages(props: Props) {
       </header>
 
       {/* body */}
-      <section className='flex flex-col gap-5 mt-10'>
+      <section
+        ref={chatboxRef}
+        className='flex-1 flex flex-col gap-5 mt-10 overflow-auto max-h-[600px]'
+      >
         {loading ? (
           <Spinner className='mx-auto mt-10' />
         ) : msgs.length ? (
@@ -54,15 +65,17 @@ export default function BubbleMessages(props: Props) {
               <div
                 key={i}
                 className={`w-fit tracking-wider ${
-                  msg.messages.sender == userContext?.user.id
-                    ? "self-end"
-                    : "self-start"
+                  msg.sender == userContext?.user.id ? "self-end" : "self-start"
                 }`}
               >
                 <span className='text-[12px] text-gray-300'>
-                  {moment(msg.messages.createdAt).startOf("hour").fromNow()}
+                  {moment(msg.createdAt).startOf("hour").fromNow()}
                 </span>
-                <Chip value={msg.messages.msg} size='lg' />
+                <Chip
+                  value={msg.msg}
+                  size='lg'
+                  className='normal-case font-poppins'
+                />
               </div>
             );
           })

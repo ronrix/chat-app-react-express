@@ -5,12 +5,13 @@ const { user, chat } = require('./api');
 const { databaseConnection } = require('./database');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { StartServerWithSocketIO } = require('./socket');
 
 const startServer = async () => {
     const app = express();
 
     // initialize db
-    databaseConnection();
+    await databaseConnection();
 
     // set up express middlewares
     app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
@@ -27,11 +28,14 @@ const startServer = async () => {
     // error handling
     // app.use(HandleErrors);
 
-    app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
-    .on('error', (err) => {
-        console.log(err);
-        process.exit();
-    })
+    // start socket connection
+    StartServerWithSocketIO(app);
+
+//     app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+//     .on('error', (err) => {
+//         console.log(err);
+//         process.exit();
+//     })
 }
 
 startServer();

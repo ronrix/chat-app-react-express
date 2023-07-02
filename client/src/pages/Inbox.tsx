@@ -1,32 +1,40 @@
 import { useState, useEffect, useContext } from "react";
 import Chat from "../components/Chat";
 import { List, Card, Spinner } from "@material-tailwind/react";
-import axios from "../utils/axios";
 import ErrorMessage from "../components/ErrorMessage";
 import UserContext, { UserContextType } from "../context/user.context";
+import { socket } from "../App";
+import { useAuthUser } from "react-auth-kit";
 
 export default function Inbox() {
   const [contactLists, setContactLists] = useState<[{ data: any }]>();
   const [loading, setLoading] = useState<boolean>(true);
   const userContext = useContext<UserContextType | null>(UserContext);
+  const auth = useAuthUser();
 
-  // get all messages by id
-  const getAllMessages = async () => {
-    try {
-      const { data } = await axios.get("/contacts");
-
-      setContactLists(data.data);
-      setLoading(false);
-      return;
-    } catch (error: any) {
-      console.log(error);
-      setLoading(false);
-    }
+  // this initialize the event listener
+  const socketListener = () => {
+    socket.emit("get_all_contacts", auth()?.id);
   };
 
   useEffect(() => {
-    getAllMessages();
-  }, [loading]);
+    let isMounted = true;
+    socketListener();
+    // Set up the event listener
+    socket.on("get_all_contacts", ({ data }) => {
+      if (isMounted && data) {
+        setContactLists(data);
+        setLoading(false);
+      }
+      setLoading(false);
+    });
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      isMounted = false;
+      socket.off("get_all_contacts");
+    };
+  }, []); // Empty dependency array to run the effect only once during component mount
 
   return (
     <div className='p-5 mt-10'>

@@ -52,7 +52,7 @@ export default function Register() {
           token: data.token,
           expiresIn: 3600 * 2,
           tokenType: "Bearer",
-          authState: { email: fields.email },
+          authState: { email: fields.email, id: data.id },
         });
 
         setLoading(false); // set the loading to false
