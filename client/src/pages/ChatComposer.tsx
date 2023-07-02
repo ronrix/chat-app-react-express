@@ -22,12 +22,18 @@ export default function ChatComposer() {
   const handleSubmitNewMsg = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (composedMsg.length) {
+      // emit event to send the msg
       socket.emit("send_msg", {
         roomId: messageContext?.chatUser.roomId,
         msg: composedMsg,
         userId: auth()?.id,
         idWhereToSend: messageContext?.chatUser.id,
       });
+
+      // emit the event to send the notification to the receiver
+      socket.emit("notifications", messageContext?.chatUser.id);
+
+      // reset field
       setComposedMsg("");
     }
     return;
@@ -49,12 +55,12 @@ export default function ChatComposer() {
       }
     });
 
-    // Clean up the event listener when the component unmounts
+    // // Clean up the event listener when the component unmounts
     return () => {
       isMounted = false;
       socket.off("get_all_msgs");
     };
-  }, []); // Empty dependency array to run the effect only once during component mount
+  }, [socket]); // Empty dependency array to run the effect only once during component mount
 
   return (
     <main className='mt-8 flex-1 flex flex-col'>
@@ -67,6 +73,7 @@ export default function ChatComposer() {
             theme='bubble'
             onChange={setComposedMsg}
             value={composedMsg}
+            className='shadow'
           />
           <div className='absolute bottom-0 rounded-full right-2'>
             <IconButton type='submit' variant='text'>

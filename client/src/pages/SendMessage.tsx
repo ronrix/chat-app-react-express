@@ -1,19 +1,19 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import ReactQuill from "react-quill";
 import { Button, Input } from "@material-tailwind/react";
 import "react-quill/dist/quill.snow.css";
 import { ChevronLeftIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import axios from "../utils/axios";
 import { uid } from "uid";
-import UserContext, { UserContextType } from "../context/user.context";
+import { socket } from "./Dashboard";
+import { useAuthUser } from "react-auth-kit";
 
 export default function SendMessage() {
   const [email, setEmail] = useState<string>("");
   const [msg, setMsg] = useState<string>("");
   const navigate = useNavigate();
-  const userContext = useContext<UserContextType | null>(UserContext);
+  const auth = useAuthUser();
 
   const handleSendNewMsg = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,10 +25,11 @@ export default function SendMessage() {
     }
 
     try {
-      const { data } = await axios.post("/message/new/create", {
+      // emit event to send the msg
+      socket.emit("send_new_msg", {
         roomId: uid(),
         msg,
-        userId: userContext?.user.id,
+        userId: auth()?.id,
         email,
       });
 
@@ -37,7 +38,6 @@ export default function SendMessage() {
       // reset fields
       setEmail("");
       setMsg("");
-      setTimeout(() => navigate(-1), 3000);
     } catch (error) {
       toast.error(error?.response.data.msg);
     }

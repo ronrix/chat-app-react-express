@@ -1,16 +1,15 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import Chat from "../components/Chat";
 import { List, Card, Spinner } from "@material-tailwind/react";
 import ErrorMessage from "../components/ErrorMessage";
-import UserContext, { UserContextType } from "../context/user.context";
 import { socket } from "../pages/Dashboard";
 import { useAuthUser, useSignOut } from "react-auth-kit";
 import CreateNewBubble from "../components/CreateNewBubble";
+import { toast } from "react-toastify";
 
 export default function Inbox() {
   const [contactLists, setContactLists] = useState<[{ data: any }]>();
   const [loading, setLoading] = useState<boolean>(true);
-  const userContext = useContext<UserContextType | null>(UserContext);
   const auth = useAuthUser();
   const signOut = useSignOut();
 
@@ -30,11 +29,18 @@ export default function Inbox() {
 
     // Set up the event listener
     socket.on("get_all_contacts", ({ data }) => {
+      console.log(data);
       if (isMounted && data) {
         setContactLists(data);
-        setLoading(false);
       }
       setLoading(false);
+    });
+
+    // Listen for notification event
+    socket.on("notification", (notif) => {
+      console.log(notif);
+      // Handle the notification as desired
+      toast.info(notif);
     });
 
     // Clean up the event listener when the component unmounts
@@ -51,17 +57,17 @@ export default function Inbox() {
         <List>
           {loading ? (
             <Spinner className='mx-auto mt-10' />
-          ) : contactLists?.contacts.length ? (
-            contactLists?.contacts.map((msg: any) => {
+          ) : contactLists?.contacts?.length ? (
+            contactLists?.contacts?.map((msg: any) => {
               const username =
-                msg.message.to?._id === userContext?.user.id
-                  ? msg.message.from?.username
-                  : msg.message.to?.username;
+                msg.message.to?._id === auth()?.id
+                  ? msg.message?.from?.username
+                  : msg.message?.to?.username;
 
               const isOnline =
-                msg.message.to?._id === userContext?.user.id
-                  ? msg.message.from?.isOnline
-                  : msg.message.to?.isOnline;
+                msg.message.to?._id === auth()?.id
+                  ? msg.message?.from?.isOnline
+                  : msg.message?.to?.isOnline;
               return (
                 <Chat
                   key={msg.message._id}
