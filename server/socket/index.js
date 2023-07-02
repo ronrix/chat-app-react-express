@@ -3,6 +3,7 @@ const http = require('http');
 const { PORT, APP_SECRET } = require("../config");
 const { SocketGetContacts } = require("./contact.socket");
 const { SocketGetMessages } = require("./message.socket");
+const { SocketGetNotification } = require("./notification.socket");
 const jwt = require('jsonwebtoken');
 
 module.exports.StartServerWithSocketIO = (app) => {
@@ -56,6 +57,7 @@ module.exports.StartServerWithSocketIO = (app) => {
         // sockets
         SocketGetContacts(socket, io);
         SocketGetMessages(socket, io);
+        SocketGetNotification(socket, io);
 
         // disconnected
         socket.on('disconnect', (reason) => {
