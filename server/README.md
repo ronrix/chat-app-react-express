@@ -12,7 +12,8 @@ Follow the steps to install this project.
    `git clone https://github.com/ronrix/chat-app-react-express.git`
 2. Install NPM packages
    `npm install`
-3. Run the project
+3. Rename .env.copy to .env and add your MONGO_URI
+4. Run the project
    `npm run dev`
 
 ## Usage
