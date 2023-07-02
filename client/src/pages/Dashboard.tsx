@@ -7,6 +7,13 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useSignOut } from "react-auth-kit";
 
+// socket
+import { io } from "socket.io-client";
+
+export const socket = io("http://localhost:8000", {
+  transports: ["websocket"],
+});
+
 export default function Dashboard() {
   const userContext = useContext<UserContextType | null>(UserContext);
   const [loading, setLoading] = useState<boolean>(true);

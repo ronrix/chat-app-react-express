@@ -6,13 +6,6 @@ import { AuthProvider } from "react-auth-kit";
 import UserContext from "./context/user.context";
 import { MessageContext } from "./context/message.context";
 
-// socket
-import { io } from "socket.io-client";
-
-export const socket = io("http://localhost:8000", {
-  transports: ["websocket"],
-});
-
 const App = () => {
   const [user, setUser] = useState<{ username: string; id: string }>({
     username: "",
