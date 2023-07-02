@@ -1,4 +1,4 @@
-const { MessageSchema, ContactSchema } = require('../')
+const { MessageSchema, ContactSchema, UserSchema } = require('../')
 
 class MessageModel {
     async GetAllMessages(roomId) {
@@ -72,6 +72,41 @@ class MessageModel {
         }
     }
 
+    // add new message with email
+    async CreateNewMessage({ roomId, msg, userId, email }) {
+        try {
+            const isEmailExists = await UserSchema.exists({ email: email  });
+            if(isEmailExists) {
+                // create new one
+                // format data
+                const data = {
+                    roomId, 
+                    messages: [
+                        {
+                            msg: msg.trim(),
+                            sender: userId,
+                            createdAt: Date.now(),
+                        }
+                    ],
+                    from: userId,
+                    to: isEmailExists._id,
+                }
+                const res = await MessageSchema.create(data);
+
+                // create or append to the contact lists of both sender and receiver
+                await this.#CheckAndCreateContact(res._id, userId);
+                await this.#CheckAndCreateContactToIdWhereToSend(res._id, isEmailExists._id);
+
+                return res;
+            }
+
+            // error if email does not exists
+            throw new Error("Email does not exists");
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
     // private method
     // append to contact list
     // check if the message is already exists in the contact list
@@ -102,18 +137,20 @@ class MessageModel {
     // private method
     // append or create new contact to the list of the "idWhereToSend"
     async #CheckAndCreateContactToIdWhereToSend(messageId, idWhereTosend) {
+        console.log(idWhereTosend)
         try {
             const isContactExist = await ContactSchema.exists({ user: idWhereTosend });
 
             // check if doc contact exists for this user
             if(isContactExist) {
+                console.log("exists...");
                 // check if the messageId already exists in the document
-                const exist = await ContactSchema.exists({ user: idWhereToSend, contacts: { $elemMatch: { message: messageId }} });
-                if(!exist) {
+                // const exist = await ContactSchema.exists({ user: idWhereToSend, contacts: { $elemMatch: { message: messageId }} });
+                // if(!exist) {
                     // update the contact and append the new list
                     await ContactSchema.updateOne({ user: idWhereTosend }, { $push: { contacts: { message: messageId } } })
-                    return
-                }
+                //     return
+                // }
                 return;
             }
 

@@ -26,4 +26,15 @@ module.exports = (app) => {
         }
     })
 
+    // Create Message
+    app.post('/message/new/create', [ValidateToken], async (req, res) => {
+        try {
+            const { roomId, msg, userId, email } = req.body;
+            const result = await message.NewCreate({ roomId, msg, userId, email });
+            return res.status(201).json(result);
+        } catch (error) {
+            return res.status(400).json({msg: error.message});
+        }
+    })
+
 }

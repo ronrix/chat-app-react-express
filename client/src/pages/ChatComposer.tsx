@@ -4,7 +4,7 @@ import BubbleMessages from "../components/BubbleMessages";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { ToastContainer } from "react-toastify";
 import { MessageContext, MessageContextType } from "../context/message.context";
-import { socket } from "../App";
+import { socket } from "../pages/Dashboard";
 import { useAuthUser } from "react-auth-kit";
 
 // react quill

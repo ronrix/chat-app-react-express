@@ -52,7 +52,7 @@ export default function Chats(props: Props) {
             color='gray'
             className='font-normal line-clamp-1'
           >
-            {currentMsg}
+            <span dangerouslySetInnerHTML={{ __html: currentMsg }}></span>
           </Typography>
         </div>
       </ListItem>

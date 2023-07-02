@@ -26,6 +26,15 @@ class MessageService {
         }
     }
 
+   // create new message with email
+    async NewCreate({ roomId, msg, userId, email }) {
+        try {
+            const result = await this.messages.CreateNewMessage({ roomId, msg, userId, email });
+            return FormatData(result);
+        } catch (error) {
+            throw new Error(error) ;
+        }
+    }
 }
 
 module.exports = MessageService;
