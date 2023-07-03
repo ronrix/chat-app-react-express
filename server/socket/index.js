@@ -5,6 +5,7 @@ const { SocketGetContacts } = require("./contact.socket");
 const { SocketGetMessages } = require("./message.socket");
 const { SocketGetNotification } = require("./notification.socket");
 const jwt = require('jsonwebtoken');
+const { activeSockets, usersWhoJoinedRoom } = require("./activeSockets");
 
 module.exports.StartServerWithSocketIO = (app) => {
     const server = http.createServer(app);
@@ -59,9 +60,36 @@ module.exports.StartServerWithSocketIO = (app) => {
         SocketGetMessages(socket, io);
         SocketGetNotification(socket, io);
 
+        // disconnect the user from the room
+        socket.on('disconnect_from_the_room', ({userId, roomId}) => {
+            for(let i=0; i<usersWhoJoinedRoom.length; i++) { // user in the room socket connections
+                if(usersWhoJoinedRoom[i].userId === userId && usersWhoJoinedRoom[i].roomId === roomId) {
+                    console.log('deleting..');
+                    usersWhoJoinedRoom.splice(i, 1);
+                    break; // exit the loop after deleting the value
+                }
+            }
+            console.log(usersWhoJoinedRoom);
+        })
+
         // disconnected
         socket.on('disconnect', (reason) => {
             console.log(`${reason} socket close with id ${socket.id}`);
+
+            // delete socket connections
+            for(const [key, value] of activeSockets.entries()) { // active socket connections
+                if(value === socket.id) {
+                    activeSockets.delete(key);
+                    break; // exit the loop after deleting the value
+                }
+            }
+            for(let i=0; i<usersWhoJoinedRoom.length; i++) { // user in the room socket connections
+                if(usersWhoJoinedRoom[i].socketId === socket.id) {
+                    console.log('deleting..');
+                    usersWhoJoinedRoom.splice(i, 1);
+                    break; // exit the loop after deleting the value
+                }
+            }
         })
       
     });

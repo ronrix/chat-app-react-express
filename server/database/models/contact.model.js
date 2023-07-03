@@ -1,4 +1,4 @@
-const { ContactSchema } = require('../');
+const { ContactSchema, UserSchema } = require('../');
 
 class ContactModel {
 
@@ -23,6 +23,16 @@ class ContactModel {
         } catch (error) {
            throw new Error(error);
         }
+    }
+
+    // get the username by id
+    async GetUsername(id) {
+      try {
+        const user = await UserSchema.findById(id);
+        return user;
+      } catch (error) {
+          throw new Error(error);
+      }
     }
 }
 

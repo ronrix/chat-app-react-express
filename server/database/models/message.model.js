@@ -144,13 +144,11 @@ class MessageModel {
     // private method
     // append or create new contact to the list of the "idWhereToSend"
     async #CheckAndCreateContactToIdWhereToSend(messageId, idWhereTosend) {
-        console.log(idWhereTosend)
         try {
             const isContactExist = await ContactSchema.exists({ user: idWhereTosend });
 
             // check if doc contact exists for this user
             if(isContactExist) {
-                console.log("exists...");
                 // check if the messageId already exists in the document
                 // const exist = await ContactSchema.exists({ user: idWhereToSend, contacts: { $elemMatch: { message: messageId }} });
                 // if(!exist) {

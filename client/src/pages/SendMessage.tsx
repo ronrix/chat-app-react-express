@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
 import { Button, Input } from "@material-tailwind/react";
 import "react-quill/dist/quill.snow.css";
@@ -42,6 +42,15 @@ export default function SendMessage() {
       toast.error(error?.response.data.msg);
     }
   };
+
+  useEffect(() => {
+    // emit an event to store the userId to the server
+    socket.emit("store_connected_user", auth()?.id);
+
+    return () => {
+      socket.off("store_user_to_room"); // remove event listener
+    };
+  });
 
   return (
     <div className='p-5 mt-10 h-full relative border'>
