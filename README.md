@@ -4,7 +4,7 @@ Simple **Chat APP** created with React TS and Node + Express + Socket.IO
 
 - Requirements:
   - [x] Essential CRUD operations
-  - [] Events and activities should be in real time(eg. Notifications, chats &amp; etc)
+  - [x] Events and activities should be in real time(eg. Notifications, chats &amp; etc)
   - [x] Login and account functionality
     - [x] Normal auth
     - [] Google Auth
@@ -12,7 +12,7 @@ Simple **Chat APP** created with React TS and Node + Express + Socket.IO
   - [x] Chat history
   - [x] Contact headers and options
   - [x] Chat composer
-  - [] Notification
+  - [x] Notification
   - Optional:
     - [] File upload
     - [] Avatar
