@@ -22,7 +22,7 @@ module.exports.GenerateSignature = async (payload) => {
     }
 }
 
-// generate refresh token
+// generate refresh token - for later use
 module.exports.RefreshToken = async (payload) => {
   try {
        return await jwt.sign(payload, APP_SECRET, { expiresIn: '1d' });

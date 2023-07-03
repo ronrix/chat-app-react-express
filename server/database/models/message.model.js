@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 class MessageModel {
     async GetAllMessages(roomId) {
         try {
+            // get the messages sorted by date in descending order
             const messages = await MessageSchema.aggregate([
                 { $match: { roomId: roomId } }, // match the document with the given roomId
                 { $unwind: "$messages" }, // Unwind the messages array
@@ -37,6 +38,7 @@ class MessageModel {
     // whereToSend is the "to" field in the message schema
     async CreateMessage({ roomId, msg, userId, idWhereToSend }) {
         try {
+            // check if room already exists
             const isMessageExists = await MessageSchema.exists({ roomId: roomId });
             if(isMessageExists) {
                 // update the doc, push new message
@@ -47,9 +49,11 @@ class MessageModel {
 
                   return res;
             }
-            // create new one
-            // format data
-            const data = {
+
+            // if room does not exists yet
+            // create new message document with roomId
+
+            const data = { // format the data to be inserted or created with MessageSchema
                 roomId, 
                 messages: [
                     {
@@ -61,14 +65,11 @@ class MessageModel {
                 from: userId,
                 to: idWhereToSend,
             }
-            const res = await MessageSchema.create(data);
+            const res = await MessageSchema.create(data); // create new "message" room
 
             // create or append to the contact lists of both sender and receiver
             await this.#CheckAndCreateContact(res._id, userId);
             await this.#CheckAndCreateContactToIdWhereToSend(res._id, idWhereToSend);
-
-            // insert notification for the msg receiver
-            // await this.#InsertNewNotification(roomId, userId, idWhereToSend);
 
             return res;
         } catch (error) {
@@ -79,10 +80,10 @@ class MessageModel {
     // add new message with email
     async CreateNewMessage({ roomId, msg, userId, email }) {
         try {
+            // check if user exists
             const isEmailExists = await UserSchema.exists({ email: email  });
             if(isEmailExists) {
-                // create new one
-                // format data
+                // if user exists create new message document with roomId
                 const data = {
                     roomId, 
                     messages: [
@@ -101,14 +102,11 @@ class MessageModel {
                 await this.#CheckAndCreateContact(res._id, userId);
                 await this.#CheckAndCreateContactToIdWhereToSend(res._id, isEmailExists._id);
 
-                // insert notification for the msg receiver
-                // await this.#InsertNewNotification(roomId, userId, isEmailExists._id);
-
                 return res;
             }
 
             // error if email does not exists
-            throw new Error("Email does not exists");
+            throw new Error("User does not exists");
         } catch (error) {
             throw new Error(error.message);
         }
@@ -119,11 +117,10 @@ class MessageModel {
     // check if the message is already exists in the contact list
     async #CheckAndCreateContact(messageId, userId) {
         try {
-            const isContactExist = await ContactSchema.exists({ user: userId });
-
             // check if doc contact exists for this user
+            const isContactExist = await ContactSchema.exists({ user: userId });
             if(isContactExist) {
-                // check if the messageId already exists in the document
+                // check if the messageId already exists in the messages array of "contacts" document
                 const exist = await ContactSchema.exists({ user: userId, contacts: { $elemMatch: { message: messageId }} });
                 if(!exist) {
                     // update the contact and append the new list
@@ -145,17 +142,11 @@ class MessageModel {
     // append or create new contact to the list of the "idWhereToSend"
     async #CheckAndCreateContactToIdWhereToSend(messageId, idWhereTosend) {
         try {
+            // check if doc contact exists for the user "idWhereToSend" or the "recipient"
             const isContactExist = await ContactSchema.exists({ user: idWhereTosend });
-
-            // check if doc contact exists for this user
             if(isContactExist) {
-                // check if the messageId already exists in the document
-                // const exist = await ContactSchema.exists({ user: idWhereToSend, contacts: { $elemMatch: { message: messageId }} });
-                // if(!exist) {
-                    // update the contact and append the new list
-                    await ContactSchema.updateOne({ user: idWhereTosend }, { $push: { contacts: { message: messageId, createdAt: Date.now() } } })
-                //     return
-                // }
+                // update the contact and append the new list
+                await ContactSchema.updateOne({ user: idWhereTosend }, { $push: { contacts: { message: messageId, createdAt: Date.now() } } })
                 return;
             }
 
@@ -164,40 +155,6 @@ class MessageModel {
             return
         } catch (error) {
            throw new Error(error) ;
-        }
-    }
-
-    // insert new notification
-    // userId is the id where to store the notification
-    // insert the notification only if user is not in the room
-    async #InsertNewNotification(roomId, senderId, userId) {
-        try {
-            console.log(roomId, senderId, userId);
-            // check if the 'userId' has notification table 
-            const exists = await NotificationSchema.findOne({ user: userId });
-
-            if(exists) {
-                // append the new notification
-                await NotificationSchema.updateOne({ user: userId }, { $push: { notifications: { _id: new mongoose.Types.ObjectId(), roomId, senderId, createdAt: Date.now() } } });
-                return;
-            }
-            
-            // create new notification table
-            const data = {
-                user: userId, 
-                notifications: [
-                    {
-                        _id: new mongoose.Types.ObjectId(),
-                        roomId,
-                        senderId,
-                        createdAt: Date.now(),
-                    }
-                ],
-            }
-            await NotificationSchema.create(data);
-            return ;
-        } catch (error) {
-            throw new Error(error) ;
         }
     }
 }

@@ -1,3 +1,4 @@
+// validate the password
 module.exports.ValidatePassword = (password) => {
     if (!password.length || !password) {
         throw new Error('Password is empty, Please fill up the field!');
@@ -9,6 +10,7 @@ module.exports.ValidatePassword = (password) => {
     return true;
 }
 
+// validate the email
 var emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 module.exports.ValidateEmail = (email) => {
     if (!email || !email.length) {

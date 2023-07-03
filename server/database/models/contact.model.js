@@ -1,11 +1,12 @@
-const { ContactSchema, UserSchema } = require('../');
+const { ContactSchema } = require('../');
 
 class ContactModel {
 
     // get all the lists of contacts
     async GetAllContacts(id) {
         try {
-            // get contact lists with user reference and message reference limited to 10 only
+            // get contact lists with user reference and message reference
+            // user reference for 'from' and 'to' field
             const all = await ContactSchema.findOne({ user: id })
             .populate({
               path: 'contacts.message',
@@ -23,16 +24,6 @@ class ContactModel {
         } catch (error) {
            throw new Error(error);
         }
-    }
-
-    // get the username by id
-    async GetUsername(id) {
-      try {
-        const user = await UserSchema.findById(id);
-        return user;
-      } catch (error) {
-          throw new Error(error);
-      }
     }
 }
 

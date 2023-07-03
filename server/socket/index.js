@@ -3,7 +3,6 @@ const http = require('http');
 const { PORT, APP_SECRET } = require("../config");
 const { SocketGetContacts } = require("./contact.socket");
 const { SocketGetMessages } = require("./message.socket");
-const { SocketGetNotification } = require("./notification.socket");
 const jwt = require('jsonwebtoken');
 const { activeSockets, usersWhoJoinedRoom } = require("./activeSockets");
 
@@ -15,18 +14,21 @@ module.exports.StartServerWithSocketIO = (app) => {
     })
 
     const AuthSocket = async (socket, next) => {
-        const token = socket.request?.headers?.cookie?.split(';').filter(c => {
-            const cookie = c.split('=');
-            if(cookie[0].trim() == '_auth') {
-                return c;
-            }
-        })[0]?.split('=')[1];
         try {
+            // get the token auth
+            const token = socket.request?.headers?.cookie?.split(';').filter(c => {
+                const cookie = c.split('=');
+                if(cookie[0].trim() == '_auth') {
+                    return c;
+                }
+            })[0]?.split('=')[1];
+
+            // check if token exists, throw error if not exists
             if(!token) {
                 throw new Error('Authentication failed');
             }
 
-            // verify token
+            // verify the token, if verified call the next() middleware
             try {
                 const verified = await jwt.verify(token, APP_SECRET)
                 if(verified) {
@@ -58,21 +60,19 @@ module.exports.StartServerWithSocketIO = (app) => {
         // sockets
         SocketGetContacts(socket, io);
         SocketGetMessages(socket, io);
-        SocketGetNotification(socket, io);
 
         // disconnect the user from the room
         socket.on('disconnect_from_the_room', ({userId, roomId}) => {
             for(let i=0; i<usersWhoJoinedRoom.length; i++) { // user in the room socket connections
+                // delete the user from the "usersWhoJoinedRoom" state
                 if(usersWhoJoinedRoom[i].userId === userId && usersWhoJoinedRoom[i].roomId === roomId) {
-                    console.log('deleting..');
                     usersWhoJoinedRoom.splice(i, 1);
                     break; // exit the loop after deleting the value
                 }
             }
-            console.log(usersWhoJoinedRoom);
         })
 
-        // disconnected
+        // socket disconnect event
         socket.on('disconnect', (reason) => {
             console.log(`${reason} socket close with id ${socket.id}`);
 
@@ -84,8 +84,8 @@ module.exports.StartServerWithSocketIO = (app) => {
                 }
             }
             for(let i=0; i<usersWhoJoinedRoom.length; i++) { // user in the room socket connections
+                // delete the user from the "usersWhoJoinedRoom" state
                 if(usersWhoJoinedRoom[i].socketId === socket.id) {
-                    console.log('deleting..');
                     usersWhoJoinedRoom.splice(i, 1);
                     break; // exit the loop after deleting the value
                 }

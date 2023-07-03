@@ -26,7 +26,7 @@ module.exports = (app) => {
         }
     })
 
-    // Create Message
+    // Create New Message
     app.post('/message/new/create', [ValidateToken], async (req, res) => {
         try {
             const { roomId, msg, userId, email } = req.body;

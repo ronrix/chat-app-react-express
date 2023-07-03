@@ -1,9 +1,10 @@
-const { MessageService, ContactService } = require('../services/');
+const { MessageService, ContactService, UserService } = require('../services/');
 const { activeSockets, usersWhoJoinedRoom } = require('./activeSockets');
 
 module.exports.SocketGetMessages = (socket, io) => {
     const service = new MessageService();
     const contactService = new ContactService();
+    const userService = new UserService();
 
     // join room
     socket.on('join_room', (data) => {
@@ -68,7 +69,7 @@ module.exports.SocketGetMessages = (socket, io) => {
                 const idWhereToSend = data?.to === userId ? data?.from : data?.to;
 
                 // get the username 
-                const { data: user } = await contactService.GetUsername(userId);
+                const { data: user } = await userService.GetUser(userId);
 
                 // get the updated contacts
                 const contacts = await contactService.GetAllContactLists(idWhereToSend.toString()); 

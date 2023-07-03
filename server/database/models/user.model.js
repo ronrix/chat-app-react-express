@@ -3,6 +3,7 @@ const { UserSchema } = require("../");
 const bcrypt = require('bcryptjs');
 
 class UserModel {
+    // find user by email
     async FindByEmail(email) {
         try {
             const user = await UserSchema.findOne({email: email});
@@ -29,7 +30,6 @@ class UserModel {
             { "_id": _id },
             { "isOnline": false }
           );
-           console.log(res);
 
            return res;
         } catch (error) {
@@ -38,6 +38,7 @@ class UserModel {
     }
 
     // create new user
+    // using bcrypt to hash the password
     async CreateUser({email, username, password}) {
         try {
             const salt = await GenerateSalt();
@@ -60,6 +61,7 @@ class UserModel {
         }
     }
 
+    // set the "isOnline" field of the user to true to indicate that user is online
     async SetIsOnlineTrue(_id) {
         try {
             const res = await UserSchema.updateOne({ _id }, { "isOnline": true })

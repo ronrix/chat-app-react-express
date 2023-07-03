@@ -8,11 +8,12 @@ class UserService {
         this.user = new UserModel();
     }
 
+    // sign in the user
     async Signin({ email, password }) {
         try {
             const user = await this.user.FindByEmail(email); // find the user by email
 
-            if(user) {
+            if(user) { // if user exists
                 // check password        
                 const hashedPassword = user.password;
                 const valid = await bcrypt.compare(password, hashedPassword);
@@ -35,12 +36,13 @@ class UserService {
         }
     }
 
+    // register new user
     async Register({ email, username, password }) {
         try {
-            // validation
+            // validate email and password
             const passValid = ValidatePassword(password);
             const emailValid = ValidateEmail(email);
-            if(passValid && emailValid) {
+            if(passValid && emailValid) { // if validation succeed, create new user
                 const user = await this.user.CreateUser({email, username, password});
                 const token = await GenerateSignature({ email: user.email, _id: user._id });
 
@@ -54,17 +56,18 @@ class UserService {
         }
     }
 
+    // sign out the user
     async Signout(_id) {
         try {
            // update the 'isOnline' field
            const res = await this.user.SetIsOnlineFalse(_id);
-           console.log(res);
            return FormatData({ msg: 'Successfully logout!'});
         } catch (error) {
            throw new Error(error);
         }
     }
 
+    // get the user by id
     async GetUser(id) {
         try {
             const user = await this.user.FindById(id);
@@ -74,6 +77,7 @@ class UserService {
         }
     }
 
+    // get all users
     async GetAllUsers(id) {
         try {
             const users = await this.user.GetAll(id);
@@ -83,6 +87,7 @@ class UserService {
         }
     }
 
+    // update the user to "isOnline" to true
     async #SetToOnline(id) {
         try {
             const user = await this.user.SetIsOnlineTrue(id);

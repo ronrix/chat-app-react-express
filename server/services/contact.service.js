@@ -15,17 +15,6 @@ class ContactService {
             throw new Error(error);
         }
     }
-
-    // get the username
-    async GetUsername(id) {
-        try {
-            const results = await this.user.GetUsername(id);
-            return FormatData(results);
-        } catch (error) {
-            throw new Error(error);
-        }
-    }
-
 }
 
 module.exports = ContactService;

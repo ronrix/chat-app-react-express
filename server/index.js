@@ -1,7 +1,6 @@
 const express = require('express');
-const { PORT } = require('./config');
 const cors = require('cors');
-const { user, chat, notification } = require('./api');
+const { user, chat } = require('./api');
 const { databaseConnection } = require('./database');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -21,22 +20,13 @@ const startServer = async () => {
     // initialize cookie parser
     app.use(cookieParser());
 
-    // api
+    // apis
     user(app);
     chat(app);
-    notification(app);
-
-    // error handling
-    // app.use(HandleErrors);
 
     // start socket connection
     StartServerWithSocketIO(app);
 
-//     app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
-//     .on('error', (err) => {
-//         console.log(err);
-//         process.exit();
-//     })
 }
 
 startServer();
