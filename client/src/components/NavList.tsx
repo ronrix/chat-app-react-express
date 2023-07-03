@@ -1,8 +1,4 @@
-import {
-  InboxIcon,
-  PowerIcon,
-  ChatBubbleLeftIcon,
-} from "@heroicons/react/24/solid";
+import { InboxIcon, PowerIcon } from "@heroicons/react/24/solid";
 import {
   List,
   ListItem,

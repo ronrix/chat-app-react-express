@@ -3,14 +3,9 @@ import { ThemeProvider } from "@material-tailwind/react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
 import { AuthProvider } from "react-auth-kit";
-import UserContext from "./context/user.context";
 import { MessageContext } from "./context/message.context";
 
 const App = () => {
-  const [user, setUser] = useState<{ username: string; id: string }>({
-    username: "",
-    id: "",
-  });
   const [chatUser, setChatUser] = useState<{
     id: string;
     username: string;
@@ -30,11 +25,9 @@ const App = () => {
         cookieDomain={window.location.hostname}
         cookieSecure={false}
       >
-        <UserContext.Provider value={{ user, setUser }}>
-          <MessageContext.Provider value={{ chatUser, setChatUser }}>
-            <RouterProvider router={router} />
-          </MessageContext.Provider>
-        </UserContext.Provider>
+        <MessageContext.Provider value={{ chatUser, setChatUser }}>
+          <RouterProvider router={router} />
+        </MessageContext.Provider>
       </AuthProvider>
     </ThemeProvider>
   );

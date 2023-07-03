@@ -20,6 +20,8 @@ export default function BubbleMessages(props: Props) {
   const chatboxRef = useRef<HTMLElement>(null);
   const auth = useAuthUser();
 
+  // function when the back is clicked, it will
+  // emit disconnection for the user to remove them in the room
   const disconnectSocket = () => {
     socket.emit("disconnect_from_the_room", {
       userId: auth()?.id,

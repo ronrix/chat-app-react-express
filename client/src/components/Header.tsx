@@ -1,4 +1,4 @@
-import { useState, createElement, useContext } from "react";
+import { useState, createElement } from "react";
 import {
   Navbar,
   Typography,
@@ -15,10 +15,9 @@ import {
   PowerIcon,
   Bars2Icon,
 } from "@heroicons/react/24/outline";
-import UserContext, { UserContextType } from "../context/user.context";
 import { useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
-import { useSignOut } from "react-auth-kit";
+import { useAuthUser, useSignOut } from "react-auth-kit";
 
 // profile menu component
 const profileMenuItems = [
@@ -98,19 +97,21 @@ function ProfileMenu({ handleLogout }: any) {
 }
 
 export default function Header() {
-  const userContext = useContext<UserContextType | null>(UserContext);
+  const auth = useAuthUser();
   const navigate = useNavigate();
   const signOut = useSignOut();
 
+  // function to handle logout
+  // calls for '/signou' api to update the fields of the user
   const handleLogout = async () => {
     try {
-      const { data } = await axios.get("/signout");
-      signOut();
-      navigate("/signin");
+      await axios.get("/signout");
+      signOut(); // clear auth cookies
+      navigate("/signin"); // redirect to '/signin'
     } catch (error) {
       console.log(error);
-      signOut();
-      navigate("/signin");
+      signOut(); // clear auth cookies
+      navigate("/signin"); // redirect to '/signin'
     }
   };
 
@@ -122,7 +123,7 @@ export default function Header() {
           href='#'
           className='mr-4 ml-2 cursor-pointer py-1.5 font-medium capitalize block md:hidden'
         >
-          {userContext?.user.username}
+          {auth()?.username}
         </Typography>
 
         <IconButton

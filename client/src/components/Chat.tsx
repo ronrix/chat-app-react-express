@@ -24,15 +24,19 @@ export default function Chats(props: Props) {
   const messageContext = useContext<MessageContextType | null>(MessageContext);
   const auth = useAuthUser();
 
+  // function to emit joining room event with userId
+  // it will store the userId and the socket id to the servers state to use for notifications
   const handleSettingActiveMsg = () => {
     socket.emit("join_room", { roomId, id }); // join the user to the room provided
     socket.emit("store_user_to_room", { userId: auth()?.id, roomId }); // emit event to store the user to the server state
+
+    // set the new message context containing messageId, roomId, and, user information of the recipient
     messageContext?.setChatUser({ id, username, isOnline, roomId });
   };
 
   useEffect(() => {
     return () => {
-      socket.off("join_room");
+      socket.off("join_room"); // remove the listener 'join_room' on unmount
     };
   });
 

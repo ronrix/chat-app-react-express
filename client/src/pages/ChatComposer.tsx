@@ -20,9 +20,9 @@ export default function ChatComposer() {
   const auth = useAuthUser();
 
   const handleSubmitNewMsg = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault(); // prevent form default functionality
     if (composedMsg.length) {
-      // emit event to send the msg
+      // emit event to send the message
       socket.emit("send_msg", {
         roomId: messageContext?.chatUser.roomId,
         msg: composedMsg,
@@ -31,24 +31,19 @@ export default function ChatComposer() {
         username: auth()?.email,
       });
 
-      // emit the event to send the notification to the receiver
-      socket.emit("notifications", messageContext?.chatUser.id);
-
       // reset field
       setComposedMsg("");
     }
     return;
   };
 
-  // this intialize the event listener
-  const socketListener = () => {
-    socket.emit("get_all_msgs", messageContext?.chatUser.roomId);
-  };
-
   useEffect(() => {
     let isMounted = true;
-    socketListener();
-    // Set up the event listener
+
+    // emit event to get the messages by passing the roomId
+    socket.emit("get_all_msgs", messageContext?.chatUser.roomId);
+
+    // listen for the event to store the response "messages" and display to the DOM
     socket.on("get_all_msgs", ({ data }) => {
       if (isMounted && data) {
         setMsgs(data);

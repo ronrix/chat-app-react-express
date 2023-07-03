@@ -28,16 +28,19 @@ export default function Register() {
     password: "",
   });
 
+  // function to handle input change event
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFields((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // function to hande onSubmit of the form
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault(); // prevent the default form functionality
     setLoading(true); // set the loading to true
 
     try {
-      // fetch login
+      // fetch register api
+      // get the data response
       const { data } = await axios.post("/register", {
         username: fields.username,
         email: fields.email,
@@ -51,17 +54,23 @@ export default function Register() {
         // store the id to cookie
         signIn({
           token: data.token,
-          expiresIn: 3600 * 2,
+          expiresIn: 3600 * 2, // 2 hours expiration
           tokenType: "Bearer",
-          authState: { email: fields.email, id: data.id },
+          authState: {
+            email: fields.email,
+            id: data.id,
+            username: data.username,
+          }, // store some data of the user to the cookie
         });
 
         setLoading(false); // set the loading to false
+
+        // this redirects to the dashboard with loading the page, to refresh the cookies too
+        // this prevents the redirecting loops from '/dashboard' to '/signin'
         window.location.href = "/dashboard";
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.msg);
-      console.log(error);
 
       // reset password fields
       setFields({ ...fields, password: "" });

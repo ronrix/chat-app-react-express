@@ -23,7 +23,7 @@ class UserService {
                     // set the online field to true
                     await this.#SetToOnline(user._id);
 
-                    return FormatData({id: user._id, token }); // return id with token
+                    return FormatData({id: user._id, username: user.username, token }); // return id with token
                 }
 
                 // incorrect password

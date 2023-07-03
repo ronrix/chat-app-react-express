@@ -15,36 +15,37 @@ export default function SendMessage() {
   const navigate = useNavigate();
   const auth = useAuthUser();
 
+  // function to handle onSubmit of the form
   const handleSendNewMsg = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault(); // prevent the default form functionality
 
-    // prevent submitting if email and msg is empty
+    // prevent submitting if email and msg is empty and display error message
     if (!email.length || !msg.length) {
       toast.error("Pleas input all the fields");
       return;
     }
 
     try {
-      // emit event to send the msg
+      // emit socket event to send the msg
       socket.emit("send_new_msg", {
-        roomId: uid(),
+        roomId: uid(), // generate random string for roomId
         msg,
-        userId: auth()?.id,
+        userId: auth()?.id, // send the userId
         email,
       });
 
-      toast.success("Message sent!");
+      toast.success("Message sent!"); // display toaster message
 
-      // reset fields
+      // reset the fields
       setEmail("");
       setMsg("");
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error?.response.data.msg);
     }
   };
 
   useEffect(() => {
-    // emit an event to store the userId to the server
+    // emit socket event to store the userId to the server
     socket.emit("store_connected_user", auth()?.id);
 
     return () => {

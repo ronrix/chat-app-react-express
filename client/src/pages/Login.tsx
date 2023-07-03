@@ -16,7 +16,6 @@ import { useIsAuthenticated } from "react-auth-kit";
 export default function Login() {
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
-
   const signIn = useSignIn();
   const [loading, setLoading] = useState<boolean>(false);
   const [fields, setFields] = useState<{ email: string; password: string }>({
@@ -24,44 +23,52 @@ export default function Login() {
     password: "",
   });
 
+  // function to handle input change event
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFields((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // function to hande onSubmit of the form
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault(); // preven the default functionality of forms
 
     // validate input fields
-    const { valid, msg } = ValidateAuthFields(fields);
-    if (!valid) {
-      toast.error(msg);
+    if (!fields.email.length || !fields.password.length) {
+      toast.error("Please fill up email and password fields");
       return;
     }
     setLoading(true); // set the loading to true
 
     try {
-      // fetch login
+      // fetch login api
+      // get the data response
       const { data } = await axios.post("/signin", {
         email: fields.email,
         password: fields.password,
       });
 
       // redirect to dashboard if there is a token in the response
-      if (data.token) {
-        // store the id to cookie
+      if (data?.token) {
+        // store the id to cookie using signIn function of 'react-auth-kit'
         signIn({
           token: data.token,
-          expiresIn: 3600 * 2,
+          expiresIn: 3600 * 2, // 2 hours expiration
           tokenType: "Bearer",
-          authState: { email: fields.email, id: data.id },
+          authState: {
+            email: fields.email,
+            id: data.id,
+            username: data.username,
+          }, // store some data of the user to the cookie
         });
 
         setLoading(false); // set the loading to false
+
+        // this redirects to the dashboard with loading the page, to refresh the cookies too
+        // this prevents the redirecting loops from '/dashboard' to '/signin'
         window.location.href = "/dashboard";
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.msg);
-      console.log(error);
+      toast.error(error?.response?.data?.msg); // display the error
 
       // reset password fields
       setFields({ ...fields, password: "" });
