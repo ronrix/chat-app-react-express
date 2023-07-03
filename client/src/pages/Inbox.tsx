@@ -43,10 +43,15 @@ export default function Inbox() {
       toast.info(notif);
     });
 
+    // emit an event to store the userId to the server
+    socket.emit("store_connected_user", auth()?.id);
+
     // Clean up the event listener when the component unmounts
     return () => {
       isMounted = false;
       socket.off("get_all_contacts");
+      socket.off("notification");
+      socket.off("store_connected_user");
     };
   }, []); // Empty dependency array to run the effect only once during component mount
 
@@ -68,6 +73,12 @@ export default function Inbox() {
                 msg.message.to?._id === auth()?.id
                   ? msg.message?.from?.isOnline
                   : msg.message?.to?.isOnline;
+
+              const senderId =
+                msg.message?.to?._id === auth()?.id
+                  ? msg.message?.from?._id
+                  : msg.message?.to?._id;
+
               return (
                 <Chat
                   key={msg.message._id}
@@ -75,7 +86,7 @@ export default function Inbox() {
                   currentMsg={
                     msg.message.messages[msg.message.messages?.length - 1].msg
                   } // get the last msg
-                  id={msg.message.to._id}
+                  id={senderId} // sender id
                   isOnline={isOnline}
                   roomId={msg.message.roomId}
                 />

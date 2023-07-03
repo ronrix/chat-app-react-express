@@ -28,6 +28,7 @@ export default function ChatComposer() {
         msg: composedMsg,
         userId: auth()?.id,
         idWhereToSend: messageContext?.chatUser.id,
+        username: auth()?.email,
       });
 
       // emit the event to send the notification to the receiver

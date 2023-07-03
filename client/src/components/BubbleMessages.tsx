@@ -6,6 +6,7 @@ import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { useAuthUser } from "react-auth-kit";
+import { socket } from "../pages/Dashboard";
 
 type Props = {
   msgs: [];
@@ -19,6 +20,14 @@ export default function BubbleMessages(props: Props) {
   const chatboxRef = useRef<HTMLElement>(null);
   const auth = useAuthUser();
 
+  const disconnectSocket = () => {
+    socket.emit("disconnect_from_the_room", {
+      userId: auth()?.id,
+      roomId: messageContext?.chatUser?.roomId,
+    });
+    navigate(-1); // redirect back
+  };
+
   useEffect(() => {
     // scroll chat box to the bottom
     if (chatboxRef.current && chatboxRef.current?.scrollHeight > 600) {
@@ -29,7 +38,7 @@ export default function BubbleMessages(props: Props) {
   return (
     <div className='h-full flex flex-col'>
       <header className='flex items-center gap-3'>
-        <IconButton variant='text' onClick={() => navigate(-1)}>
+        <IconButton variant='text' onClick={disconnectSocket}>
           <ChevronLeftIcon className='h-5 w-5 text-gray-500' />
         </IconButton>
         <Avatar

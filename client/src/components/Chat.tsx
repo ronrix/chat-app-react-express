@@ -5,10 +5,11 @@ import {
   Typography,
   Badge,
 } from "@material-tailwind/react";
-import { useContext } from "react";
+import { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { MessageContext, MessageContextType } from "../context/message.context";
 import { socket } from "../pages/Dashboard";
+import { useAuthUser } from "react-auth-kit";
 
 type Props = {
   username: string;
@@ -21,11 +22,20 @@ type Props = {
 export default function Chats(props: Props) {
   const { username, currentMsg, id, isOnline, roomId } = props;
   const messageContext = useContext<MessageContextType | null>(MessageContext);
+  const auth = useAuthUser();
 
   const handleSettingActiveMsg = () => {
-    socket.emit("join_room", { roomId, id });
+    socket.emit("join_room", { roomId, id }); // join the user to the room provided
+    socket.emit("store_user_to_room", { userId: auth()?.id, roomId }); // emit event to store the user to the server state
     messageContext?.setChatUser({ id, username, isOnline, roomId });
   };
+
+  useEffect(() => {
+    return () => {
+      socket.off("join_room");
+    };
+  });
+
   return (
     <Link to={`/dashboard/inbox/${roomId}}`} onClick={handleSettingActiveMsg}>
       <ListItem>
