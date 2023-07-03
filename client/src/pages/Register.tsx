@@ -62,6 +62,9 @@ export default function Register() {
     } catch (error: any) {
       toast.error(error?.response?.data?.msg);
       console.log(error);
+
+      // reset password fields
+      setFields({ ...fields, password: "" });
       setLoading(false); // set the loading to false
     }
   };
