@@ -28,7 +28,6 @@ export default function Inbox() {
 
     // listen for the event listener to store the data received from the server and display it to the DOM
     socket.on("get_all_contacts", ({ data }) => {
-      console.log(data);
       if (isMounted && data) {
         setContactLists(data);
       }

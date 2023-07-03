@@ -25,7 +25,7 @@ module.exports.GenerateSignature = async (payload) => {
 // generate refresh token - for later use
 module.exports.RefreshToken = async (payload) => {
   try {
-       return await jwt.sign(payload, APP_SECRET, { expiresIn: '1d' });
+       return await jwt.sign(payload, APP_SECRET, { expiresIn: '1hr' });
     } catch (error) {
       console.log(error)
       throw new Error("Failed generating new token!");

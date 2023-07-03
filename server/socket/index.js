@@ -32,7 +32,8 @@ module.exports.StartServerWithSocketIO = (app) => {
             try {
                 const verified = await jwt.verify(token, APP_SECRET)
                 if(verified) {
-                    socket.request.user = verified;
+                    socket.request.user = verified; // store the user data
+                    socket.request.token = token; // store the token
                     return next();
                 }
             }
