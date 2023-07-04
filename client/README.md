@@ -24,3 +24,11 @@ Instructions on how to work on this
 3. **src/context** folder, for storing global states
 4. **src/componets** folder, add your UI components here
 5. **src/router.ts** add more routes there for more pages
+
+## for testing
+
+You can login with one of each users i created
+
+1. ron@rix.com | password
+2. menma@email.com | password
+3. jintan@email.com | password
