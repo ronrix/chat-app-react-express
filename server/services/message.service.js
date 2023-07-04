@@ -37,9 +37,9 @@ class MessageService {
     }
 
    // delete ia message with message Id
-    async DeleteMsg({ messageId }) {
+    async DeleteMsg({ messageId, userId }) {
         try {
-            const result = await this.messages.DeleteMsg({ messageId });
+            const result = await this.messages.DeleteMsg({ messageId, userId });
             return FormatData(result);
         } catch (error) {
             throw new Error(error) ;

@@ -50,12 +50,11 @@ export default function SendMessage() {
         if (data.status === 201) {
           // message is sent to recipient
           toast.success(data.msg);
+          // reset the fields only when message was successfully sent
+          setMsg("");
           return;
         }
         toast.error(data.msg);
-        // reset the fields
-        setEmail("");
-        setMsg("");
       });
     } catch (error: any) {
       toast.error(error?.response.data.msg);

@@ -4,6 +4,8 @@ import axios from "../utils/axios";
 import { Spinner } from "@material-tailwind/react";
 import ErrorMessage from "../components/ErrorMessage";
 import { useSignOut } from "react-auth-kit";
+import { socket } from "./Dashboard";
+import { toast } from "react-toastify";
 
 export default function ListOfUsers() {
   const [users, setUsers] = useState<[]>([]);
@@ -25,7 +27,18 @@ export default function ListOfUsers() {
   };
 
   useEffect(() => {
+    // Listen for notification event
+    socket.on("notification", (notif) => {
+      console.log(notif);
+      // Handle the notification as desired
+      toast.info(notif);
+    });
+
     getListsOfUsers(); // call the fetch api
+
+    return () => {
+      socket.off("notification");
+    };
   }, []);
 
   return (

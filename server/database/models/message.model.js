@@ -1,4 +1,4 @@
-const { MessageSchema, ContactSchema, UserSchema, NotificationSchema } = require('../')
+const { MessageSchema, ContactSchema, UserSchema } = require('../')
 const mongoose = require('mongoose');
 
 class MessageModel {
@@ -78,12 +78,50 @@ class MessageModel {
     }
 
     // add new message with email
+    // roomId is newly generated
     async CreateNewMessage({ roomId, msg, userId, email }) {
         try {
             // check if user exists
             const isEmailExists = await UserSchema.exists({ email: email  });
             if(isEmailExists) {
-                // if user exists create new message document with roomId
+
+                // check if user has already contact lists of 'recipient' and 'recipient' already has the contact list of the user
+
+                // 1. get the contact lists for userId and the recipient
+                const contactListOfBothUsers = await ContactSchema.find({ user: { $in: [userId, isEmailExists._id] } });
+
+                // 2. this will check if the sender and the recipient already have a contact list of each other
+                // by looping through and checking them with messageId from 'contactlistOfBothUsers' and 'allContacts'
+                let flag = null;
+                for(let i=0; i<contactListOfBothUsers[0].contacts.length; i++) {
+                    for(let j=0; j<contactListOfBothUsers[1].contacts.length; j++) {
+                        // check
+                        if(contactListOfBothUsers[0].contacts[i].message.toString() === contactListOfBothUsers[1].contacts[j].message.toString()) {
+                            flag = i; // we can set i or j here to get the index of the match contact list
+                            break;
+                        }
+                    }
+                }
+
+                // check, if flag is 1 then it means there's connection between the two user then
+                // we can now update it the message document with new message we will send
+                // without appending or creating new contact list for both users
+                if(flag !== null)  {
+                    // get the message id of the contact lists to use for finding and updating the 
+                    // existing message document
+                    const messageId = contactListOfBothUsers[0].contacts[flag].message;
+
+                    // update the message document with new message
+                    const res = await MessageSchema.findOneAndUpdate(
+                        { _id: messageId }, 
+                        { $push: { messages: { msg: msg.trim(), sender: userId, createdAt: Date.now()  } } },
+                        { new: true });
+
+                    return res; // return now with response
+                }
+
+                // if no matchingContacts for both that means it's their first time messaging each other
+                // so will create new message document with roomId
                 const data = {
                     roomId, 
                     messages: [
@@ -102,7 +140,7 @@ class MessageModel {
                 await this.#CheckAndCreateContact(res._id, userId);
                 await this.#CheckAndCreateContactToIdWhereToSend(res._id, isEmailExists._id);
 
-                return res;
+                return res; // return with response
             }
 
             // error if email does not exists
@@ -159,18 +197,17 @@ class MessageModel {
     }
 
     // delete a message with provided message id
-    // instead of delete the message document, i only want to delete the contact lists for each users
+    // instead of delete the message document, i only want to delete the contact lists for the users who call it
     // for like "safe delete" thingy
-    async DeleteMsg({ messageId }) {
+    async DeleteMsg({ messageId, userId }) {
         try {
             // update contacts docs contacts array field containing the messageId
-            const result = await ContactSchema.updateMany(
-                { 'contacts': { $elemMatch: { "message": { $eq: messageId } } } },
+            const result = await ContactSchema.updateOne(
+                { user: userId },
                 { "$pull": { "contacts": { "message": messageId } } },
                 { new: true }
             );
             if(result?.modifiedCount) {
-                console.log('deleting...');
                 return { msg: 'Successfully deleted', status: 204 };
             }
         } catch (error) {
