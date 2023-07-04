@@ -8,6 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { uid } from "uid";
 import { socket } from "./Dashboard";
 import { useAuthUser } from "react-auth-kit";
+import { ValidateEmail } from "../utils/validate-inputs";
 
 export default function SendMessage() {
   const [email, setEmail] = useState<string>("");
@@ -21,7 +22,14 @@ export default function SendMessage() {
 
     // prevent submitting if email and msg is empty and display error message
     if (!email.length || !msg.length) {
-      toast.error("Pleas input all the fields");
+      toast.error("Please input all the fields");
+      return;
+    }
+
+    // check email if valid
+    if (!ValidateEmail(email)) {
+      toast.error("Please input valid email (ex. name@email.com)"); // display error message
+      setEmail(""); // reset email field
       return;
     }
 
@@ -34,7 +42,16 @@ export default function SendMessage() {
         email,
       });
 
-      toast.success("Message sent!"); // display toaster message
+      // listen for "send_new_msg_response" to display a message
+      socket.on("send_new_msg_response", (data) => {
+        console.log(data);
+        if (data.status === 201) {
+          // message is sent to recipient
+          toast.success(data.msg);
+          return;
+        }
+        toast.error(data.msg);
+      });
 
       // reset the fields
       setEmail("");

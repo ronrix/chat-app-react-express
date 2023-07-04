@@ -118,8 +118,14 @@ module.exports.SocketGetMessages = (socket, io) => {
                     // send an event listener with result value to the recipient socket
                     io.to(recipientSocketId).emit('get_all_contacts', contacts);  // send the updated contacts
                     io.to(recipientSocketId).emit('notification', `New message received from ${user?.username}` ); // send the notification
+
+                    // send a response message to the client who calls it
+                    socket.emit('send_new_msg_response', { msg: "Message sent", status: 201 });
                 } catch (error) {
                     io.to(roomId).emit('get_all_msgs', []); // send an event listener with wth no result
+
+                    // send a response message to the client who calls it
+                    socket.emit('send_new_msg_response', { msg: "Message didn't send, " + error.message, status: 404 });
                 }
             }
         });
