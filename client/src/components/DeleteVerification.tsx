@@ -1,0 +1,62 @@
+import { useContext } from "react";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  Typography,
+} from "@material-tailwind/react";
+import axios from "../utils/axios";
+import { toast } from "react-toastify";
+import { DeleteContext, DeleteContextType } from "../context/delete.context";
+
+type Props = {
+  messageId: string;
+};
+
+export default function DeleteVerification(props: Props) {
+  const { messageId } = props;
+  const deleteContext = useContext<DeleteContextType | null>(DeleteContext);
+
+  const handleProceedDeleting = async () => {
+    try {
+      const { data } = await axios.delete("/message/delete", {
+        data: { messageId },
+      });
+      console.log(data);
+      if (data.data.status === 204) {
+        toast.success(data.data.msg);
+      }
+      deleteContext?.setIsDelete(false);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.msg);
+    }
+  };
+
+  const closeModal = () => deleteContext?.setIsDelete(false);
+
+  return (
+    <Dialog open={deleteContext?.isDelete} handler={closeModal}>
+      <DialogHeader>
+        <Typography variant='h5' color='blue-gray'>
+          Are you sure?
+        </Typography>
+      </DialogHeader>
+      <DialogBody divider className='grid place-items-center gap-4'>
+        <Typography className='text-center font-normal'>
+          Do you really want to delete this message? This process cannot be
+          undone.
+        </Typography>
+      </DialogBody>
+      <DialogFooter className='space-x-2'>
+        <Button variant='text' color='blue-gray' onClick={closeModal}>
+          No, cancel it.
+        </Button>
+        <Button variant='gradient' onClick={handleProceedDeleting} color='red'>
+          Yes, delete it.
+        </Button>
+      </DialogFooter>
+    </Dialog>
+  );
+}

@@ -35,6 +35,16 @@ class MessageService {
             throw new Error(error) ;
         }
     }
+
+   // delete ia message with message Id
+    async DeleteMsg({ messageId }) {
+        try {
+            const result = await this.messages.DeleteMsg({ messageId });
+            return FormatData(result);
+        } catch (error) {
+            throw new Error(error) ;
+        }
+    }
 }
 
 module.exports = MessageService;

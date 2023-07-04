@@ -15,14 +15,26 @@ import {
   PowerIcon,
   Bars2Icon,
 } from "@heroicons/react/24/outline";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
 import { useAuthUser, useSignOut } from "react-auth-kit";
+import { InboxIcon, UserGroupIcon } from "@heroicons/react/24/solid";
 
 // profile menu component
 const profileMenuItems = [
   {
+    label: "List of users",
+    path: "/dashboard/list-of-users",
+    icon: UserGroupIcon,
+  },
+  {
+    label: "Inbox",
+    path: "/dashboard/inbox",
+    icon: InboxIcon,
+  },
+  {
     label: "Sign Out",
+    path: "",
     icon: PowerIcon,
   },
 ];
@@ -30,12 +42,15 @@ const profileMenuItems = [
 function ProfileMenu({ handleLogout }: any) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const closeMenu = () => setIsMenuOpen(false);
+  const navigate = useNavigate();
 
-  const handleNavItem = (type: string) => {
+  const handleNavItem = (type: string, path: string) => {
     if (type === "Sign Out") {
       handleLogout();
+      closeMenu();
+      return;
     }
-    closeMenu();
+    navigate(path); // navigate to pages
   };
 
   return (
@@ -63,12 +78,12 @@ function ProfileMenu({ handleLogout }: any) {
           </Button>
         </MenuHandler>
         <MenuList className='p-1'>
-          {profileMenuItems.map(({ label, icon }, key) => {
+          {profileMenuItems.map(({ label, path, icon }, key) => {
             const isLastItem = key === profileMenuItems.length - 1;
             return (
               <MenuItem
                 key={label}
-                onClick={() => handleNavItem(label)}
+                onClick={() => handleNavItem(label, path)}
                 className={`flex items-center gap-2 rounded ${
                   isLastItem
                     ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"

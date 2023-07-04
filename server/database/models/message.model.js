@@ -157,6 +157,26 @@ class MessageModel {
            throw new Error(error) ;
         }
     }
+
+    // delete a message with provided message id
+    // instead of delete the message document, i only want to delete the contact lists for each users
+    // for like "safe delete" thingy
+    async DeleteMsg({ messageId }) {
+        try {
+            // update contacts docs contacts array field containing the messageId
+            const result = await ContactSchema.updateMany(
+                { 'contacts': { $elemMatch: { "message": { $eq: messageId } } } },
+                { "$pull": { "contacts": { "message": messageId } } },
+                { new: true }
+            );
+            if(result?.modifiedCount) {
+                console.log('deleting...');
+                return { msg: 'Successfully deleted', status: 204 };
+            }
+        } catch (error) {
+           throw new Error(error) ;
+        }
+    }
 }
 
 module.exports = MessageModel;

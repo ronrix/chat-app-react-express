@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Chat from "../components/Chat";
 import { List, Card, Spinner } from "@material-tailwind/react";
 import ErrorMessage from "../components/ErrorMessage";
@@ -6,10 +6,12 @@ import { socket } from "../pages/Dashboard";
 import { useAuthUser, useSignOut } from "react-auth-kit";
 import CreateNewBubble from "../components/CreateNewBubble";
 import { toast } from "react-toastify";
+import { DeleteContext, DeleteContextType } from "../context/delete.context";
 
 export default function Inbox() {
   const [contactLists, setContactLists] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const deleteContext = useContext<DeleteContextType>(DeleteContext);
   const auth = useAuthUser();
   const signOut = useSignOut();
 
@@ -51,7 +53,7 @@ export default function Inbox() {
       socket.off("notification");
       socket.off("store_connected_user");
     };
-  }, []);
+  }, [deleteContext.isDelete, auth, signOut]);
 
   return (
     <div className='p-5 h-full relative'>
@@ -90,6 +92,7 @@ export default function Inbox() {
                   id={senderId} // sender id
                   isOnline={isOnline}
                   roomId={msg.message.roomId}
+                  messageId={msg.message._id}
                 />
               );
             })

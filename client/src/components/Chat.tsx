@@ -4,12 +4,17 @@ import {
   Avatar,
   Typography,
   Badge,
+  ListItemSuffix,
+  IconButton,
 } from "@material-tailwind/react";
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { MessageContext, MessageContextType } from "../context/message.context";
 import { socket } from "../pages/Dashboard";
 import { useAuthUser } from "react-auth-kit";
+import { TrashIcon } from "@heroicons/react/24/solid";
+import DeleteVerification from "./DeleteVerification";
+import { DeleteContext, DeleteContextType } from "../context/delete.context";
 
 type Props = {
   username: string;
@@ -17,11 +22,13 @@ type Props = {
   id: string;
   isOnline: boolean;
   roomId: string;
+  messageId: string;
 };
 
 export default function Chats(props: Props) {
-  const { username, currentMsg, id, isOnline, roomId } = props;
+  const { username, currentMsg, id, isOnline, roomId, messageId } = props;
   const messageContext = useContext<MessageContextType | null>(MessageContext);
+  const deleteContext = useContext<DeleteContextType | null>(DeleteContext);
   const auth = useAuthUser();
 
   // function to emit joining room event with userId
@@ -34,6 +41,8 @@ export default function Chats(props: Props) {
     messageContext?.setChatUser({ id, username, isOnline, roomId });
   };
 
+  // this function shows the
+
   useEffect(() => {
     return () => {
       socket.off("join_room"); // remove the listener 'join_room' on unmount
@@ -41,15 +50,15 @@ export default function Chats(props: Props) {
   });
 
   return (
-    <Link to={`/dashboard/inbox/${roomId}}`} onClick={handleSettingActiveMsg}>
-      <ListItem>
-        <ListItemPrefix>
-          <Avatar
-            variant='circular'
-            alt='alexander'
-            src='https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
-          />
-        </ListItemPrefix>
+    <ListItem>
+      <ListItemPrefix>
+        <Avatar
+          variant='circular'
+          alt='alexander'
+          src='https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
+        />
+      </ListItemPrefix>
+      <Link to={`/dashboard/inbox/${roomId}}`} onClick={handleSettingActiveMsg}>
         <div>
           <Typography
             variant='h6'
@@ -67,7 +76,23 @@ export default function Chats(props: Props) {
             <span dangerouslySetInnerHTML={{ __html: currentMsg }}></span>
           </Typography>
         </div>
-      </ListItem>
-    </Link>
+      </Link>
+
+      {/* add delete button */}
+      <ListItemSuffix>
+        <IconButton
+          onClick={() => deleteContext?.setIsDelete(true)}
+          variant='text'
+          color='red'
+        >
+          <TrashIcon className='h-5 w-5' />
+        </IconButton>
+      </ListItemSuffix>
+
+      {/* delete modal */}
+      <DeleteVerification
+        messageId={messageId} // this is the message id that's going to be deleted
+      />
+    </ListItem>
   );
 }

@@ -47,18 +47,16 @@ export default function SendMessage() {
 
       // listen for "send_new_msg_response" to display a message
       socket.on("send_new_msg_response", (data) => {
-        console.log(data);
         if (data.status === 201) {
           // message is sent to recipient
           toast.success(data.msg);
           return;
         }
         toast.error(data.msg);
+        // reset the fields
+        setEmail("");
+        setMsg("");
       });
-
-      // reset the fields
-      setEmail("");
-      setMsg("");
     } catch (error: any) {
       toast.error(error?.response.data.msg);
     }

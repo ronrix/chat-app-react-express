@@ -37,4 +37,15 @@ module.exports = (app) => {
         }
     })
 
+    // delete a message
+    app.delete('/message/delete', [ValidateToken], async (req, res) => {
+        try {
+            const { messageId } = req.body; // get the message id
+            const result = await message.DeleteMsg({ messageId });
+            return res.json(result); // send 204 code "update/delete successfully"
+        } catch (error) {
+            return res.status(400).json({msg: error.message});
+        }
+    })
+
 }
