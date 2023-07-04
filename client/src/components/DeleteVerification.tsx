@@ -11,33 +11,29 @@ import axios from "../utils/axios";
 import { toast } from "react-toastify";
 import { DeleteContext, DeleteContextType } from "../context/delete.context";
 
-type Props = {
-  messageId: string;
-};
-
-export default function DeleteVerification(props: Props) {
-  const { messageId } = props;
+export default function DeleteVerification() {
   const deleteContext = useContext<DeleteContextType | null>(DeleteContext);
 
   const handleProceedDeleting = async () => {
     try {
       const { data } = await axios.delete("/message/delete", {
-        data: { messageId },
+        data: { messageId: deleteContext?.deleteData.messageId },
       });
       console.log(data);
       if (data.data.status === 204) {
         toast.success(data.data.msg);
       }
-      deleteContext?.setIsDelete(false);
+      deleteContext?.setDeleteData({ isDeleting: false, messageId: "" });
     } catch (error: any) {
       toast.error(error?.response?.data?.msg);
     }
   };
 
-  const closeModal = () => deleteContext?.setIsDelete(false);
+  const closeModal = () =>
+    deleteContext?.setDeleteData({ isDeleting: false, messageId: "" });
 
   return (
-    <Dialog open={deleteContext?.isDelete} handler={closeModal}>
+    <Dialog open={deleteContext?.deleteData.isDeleting} handler={closeModal}>
       <DialogHeader>
         <Typography variant='h5' color='blue-gray'>
           Are you sure?

@@ -7,7 +7,10 @@ import { MessageContext } from "./context/message.context";
 import { DeleteContext } from "./context/delete.context";
 
 const App = () => {
-  const [isDelete, setIsDelete] = useState<boolean>(false);
+  const [deleteData, setDeleteData] = useState<{
+    isDeleting: boolean;
+    messageId: string;
+  }>({ isDeleting: false, messageId: "" });
   const [chatUser, setChatUser] = useState<{
     id: string;
     username: string;
@@ -28,7 +31,7 @@ const App = () => {
         cookieSecure={false}
       >
         <MessageContext.Provider value={{ chatUser, setChatUser }}>
-          <DeleteContext.Provider value={{ isDelete, setIsDelete }}>
+          <DeleteContext.Provider value={{ deleteData, setDeleteData }}>
             <RouterProvider router={router} />
           </DeleteContext.Provider>
         </MessageContext.Provider>

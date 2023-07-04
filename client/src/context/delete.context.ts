@@ -1,8 +1,8 @@
 import {createContext} from 'react';
 
 export type DeleteContextType = {
-    isDelete: boolean;
-    setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
+    deleteData: { isDeleting: boolean, messageId: string };
+    setDeleteData: React.Dispatch<React.SetStateAction<{ isDeleting: boolean, messageId: string }>>;
  }
 
 // store user data for the chat composer

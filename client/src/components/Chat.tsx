@@ -83,7 +83,9 @@ export default function Chats(props: Props) {
       {/* add delete button */}
       <ListItemSuffix>
         <IconButton
-          onClick={() => deleteContext?.setIsDelete(true)}
+          onClick={() =>
+            deleteContext?.setDeleteData({ isDeleting: true, messageId })
+          }
           variant='text'
           color='red'
         >
@@ -92,9 +94,7 @@ export default function Chats(props: Props) {
       </ListItemSuffix>
 
       {/* delete modal */}
-      <DeleteVerification
-        messageId={messageId} // this is the message id that's going to be deleted
-      />
+      <DeleteVerification />
     </ListItem>
   );
 }

@@ -11,7 +11,7 @@ import { DeleteContext, DeleteContextType } from "../context/delete.context";
 export default function Inbox() {
   const [contactLists, setContactLists] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const deleteContext = useContext<DeleteContextType>(DeleteContext);
+  const deleteContext = useContext<DeleteContextType | null>(DeleteContext);
   const auth = useAuthUser();
   const signOut = useSignOut();
 
@@ -53,7 +53,7 @@ export default function Inbox() {
       socket.off("notification");
       socket.off("store_connected_user");
     };
-  }, [deleteContext.isDelete, auth, signOut]);
+  }, [deleteContext?.deleteData.isDeleting, auth, signOut]);
 
   return (
     <div className='p-5 h-full relative'>
