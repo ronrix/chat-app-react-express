@@ -70,6 +70,28 @@ class UserModel {
             throw new Error(error);
         }
     }
+
+    // update user's username
+    async UpdateUserUsernameAndEmail(username, email, _id) {
+        try {
+            const res = await UserSchema.findOneAndUpdate({ _id }, { username, email })
+            return res;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    // update user's password
+    // async UpdateUserPassword(password, _id) {
+    //     try {
+    //         const salt = await GenerateSalt();
+    //         const hashedPassword = await bcrypt.hash(password, salt)
+    //         const res = await UserSchema.updateOne({ _id }, { password: hashedPassword, salt });
+    //         return res;
+    //     } catch (error) {
+    //         throw new Error(error);
+    //     }
+    // }
 }
 
 module.exports = UserModel;

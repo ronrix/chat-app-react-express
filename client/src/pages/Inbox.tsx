@@ -57,7 +57,7 @@ export default function Inbox() {
 
   return (
     <div className='p-5 h-full relative'>
-      <h3 className='mb-5'>Messages</h3>
+      <h2 className='mb-5 font-bold text-2xl'>Messages</h2>
       <Card className='w-full'>
         <List>
           {loading ? (

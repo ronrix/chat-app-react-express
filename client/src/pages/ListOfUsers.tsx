@@ -43,7 +43,7 @@ export default function ListOfUsers() {
 
   return (
     <div className='p-5 h-full relative'>
-      <h2>Users</h2>
+      <h2 className='font-bold text-2xl'>Users</h2>
 
       <div className='grid gap-16 grid-cols-fluid mt-5'>
         {loading ? (

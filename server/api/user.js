@@ -95,4 +95,17 @@ module.exports = (app) => {
             return res.status(400) .json({msg: error.message});
         }
     });
+
+    // update user/profile information
+    app.put('/user/update-info', [ValidateToken], async (req, res) => {
+        try {
+            const { _id } = req.user; // get user id
+            const { username, email, password } = req.body; // get all the fiels
+            const result = await service.UpdateUser({ username, email, password, _id });
+            console.log(result);
+            return res.json(result);
+        } catch (error) {
+            return res.status(400) .json({msg: error.message});
+        }
+    });
 }

@@ -8,6 +8,7 @@ import ChatComposer from "./pages/ChatComposer";
 import SendMessage from "./pages/SendMessage";
 import ListOfUsers from "./pages/ListOfUsers";
 import CreateGroupChat from "./pages/CreateGroupChat";
+import ProfileSettings from "./pages/ProfileSettings";
 
 // router
 export const router = createBrowserRouter([
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/create-group",
         element: <CreateGroupChat />,
+      },
+      {
+        path: "/dashboard/profile-settings",
+        element: <ProfileSettings />,
       },
       {
         path: "/dashboard/inbox/:id",

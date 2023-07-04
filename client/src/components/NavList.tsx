@@ -1,4 +1,9 @@
-import { InboxIcon, PowerIcon, UserGroupIcon } from "@heroicons/react/24/solid";
+import {
+  InboxIcon,
+  PowerIcon,
+  UserGroupIcon,
+  Cog6ToothIcon,
+} from "@heroicons/react/24/solid";
 import {
   List,
   ListItem,
@@ -43,6 +48,19 @@ export default function NavList(props: Props) {
           <InboxIcon className='h-5 w-5' />
         </ListItemPrefix>
         Inbox
+      </ListItem>
+      <ListItem
+        onClick={() => navigate("/dashboard/profile-settings")}
+        className={`${
+          location.pathname.split("/")[2] === "profile-settings"
+            ? "bg-gray-100"
+            : ""
+        }`}
+      >
+        <ListItemPrefix>
+          <Cog6ToothIcon className='h-5 w-5' />
+        </ListItemPrefix>
+        Profile settings
       </ListItem>
       <PopoverHandler onClick={handleLogout}>
         <ListItem>

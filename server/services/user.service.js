@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { UserModel } = require("../database/models");
 const { GenerateSignature, FormatData } = require('../utils');
-const { ValidatePassword, ValidateEmail } = require('../utils/validation');
+const { ValidatePassword, ValidateEmail, VerifyEmail } = require('../utils/validation');
 
 class UserService {
     constructor() {
@@ -92,6 +92,38 @@ class UserService {
         try {
             const user = await this.user.SetIsOnlineTrue(id);
             return FormatData(user);
+        } catch (error) {
+           throw new Error(error) ;
+        }
+    }
+
+
+    // update user's information
+    async UpdateUser({ username, email, password, _id}) {
+        try {
+            // only update fields that are not empty
+
+            // username vaidation
+            if(username.length > 15) {
+                throw new Error("Username must not be longer than 15 characters");
+            }
+
+            // password validation
+            if(password.length < 8 && password.length > 1) {
+                throw new Error("Password must not be less than 8 characters!");
+            }
+
+            // update 
+            const res = await this.user.UpdateUserUsernameAndEmail(username, email, _id);
+
+            // if(password.length) {
+            //     await this.user.UpdateUserEmail(password, _id);
+            // }
+
+            if(res) {
+                return FormatData({msg: "Successfully updated infomration", status: 204, username: res.username, email: res.email});
+            }
+            return FormatData({});
         } catch (error) {
            throw new Error(error) ;
         }

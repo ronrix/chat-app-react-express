@@ -15,13 +15,18 @@ import {
   PowerIcon,
   Bars2Icon,
 } from "@heroicons/react/24/outline";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
 import { useAuthUser, useSignOut } from "react-auth-kit";
 import { InboxIcon, UserGroupIcon } from "@heroicons/react/24/solid";
 
 // profile menu component
 const profileMenuItems = [
+  {
+    label: "Profile settings",
+    path: "/dashboard/profile-settings",
+    icon: UserGroupIcon,
+  },
   {
     label: "List of users",
     path: "/dashboard/list-of-users",
