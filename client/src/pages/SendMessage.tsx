@@ -3,7 +3,7 @@ import ReactQuill from "react-quill";
 import { Button, Input } from "@material-tailwind/react";
 import "react-quill/dist/quill.snow.css";
 import { ChevronLeftIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { uid } from "uid";
 import { socket } from "./Dashboard";
@@ -11,7 +11,10 @@ import { useAuthUser } from "react-auth-kit";
 import { ValidateEmail } from "../utils/validate-inputs";
 
 export default function SendMessage() {
-  const [email, setEmail] = useState<string>("");
+  const location = useLocation();
+  const [email, setEmail] = useState<string>(() =>
+    location.search ? location.search.split("=")[1] : ""
+  ); // get the email in the query if there is one
   const [msg, setMsg] = useState<string>("");
   const navigate = useNavigate();
   const auth = useAuthUser();

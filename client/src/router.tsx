@@ -6,7 +6,7 @@ import Inbox from "./pages/Inbox";
 import { RequireAuth } from "react-auth-kit";
 import ChatComposer from "./pages/ChatComposer";
 import SendMessage from "./pages/SendMessage";
-import People from "./pages/People";
+import ListOfUsers from "./pages/ListOfUsers";
 import CreateGroupChat from "./pages/CreateGroupChat";
 
 // router
@@ -36,8 +36,8 @@ export const router = createBrowserRouter([
         element: <Inbox />,
       },
       {
-        path: "/dashboard/people",
-        element: <People />,
+        path: "/dashboard/list-of-users",
+        element: <ListOfUsers />,
       },
       {
         path: "/dashboard/create-group",

@@ -19,7 +19,7 @@ export default function Dashboard() {
   useEffect(() => {
     // if user is authenticated then redirect them to '/inbox' to view the contact lists
     if (isAuthenticated()) {
-      navigate("/dashboard/inbox");
+      navigate("/dashboard/list-of-users");
     }
   }, []);
 

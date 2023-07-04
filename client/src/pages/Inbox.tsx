@@ -54,7 +54,7 @@ export default function Inbox() {
   }, []);
 
   return (
-    <div className='p-5 mt-10 h-full relative'>
+    <div className='p-5 h-full relative'>
       <h3 className='mb-5'>Messages</h3>
       <Card className='w-full'>
         <List>

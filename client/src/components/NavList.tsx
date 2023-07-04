@@ -1,4 +1,4 @@
-import { InboxIcon, PowerIcon } from "@heroicons/react/24/solid";
+import { InboxIcon, PowerIcon, UserGroupIcon } from "@heroicons/react/24/solid";
 import {
   List,
   ListItem,
@@ -20,6 +20,19 @@ export default function NavList(props: Props) {
   return (
     <List>
       <hr className='my-2 border-blue-gray-50' />
+      <ListItem
+        onClick={() => navigate("/dashboard/list-of-users")}
+        className={`${
+          location.pathname.split("/")[2] === "list-of-users"
+            ? "bg-gray-100"
+            : ""
+        }`}
+      >
+        <ListItemPrefix>
+          <UserGroupIcon className='h-5 w-5' />
+        </ListItemPrefix>
+        Lists of users
+      </ListItem>
       <ListItem
         onClick={() => navigate("/dashboard/inbox")}
         className={`${
