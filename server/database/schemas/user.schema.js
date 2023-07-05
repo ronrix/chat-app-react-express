@@ -11,7 +11,7 @@ const UserSchema = new Schema({
     email: String,
     password: String,
     salt: String, // for password hashing
-    avatar: String, // url or path to image
+    avatar: { type: Schema.Types.String, default: 'uploads/default-avatar.jpg' }, // url or path to image
     isOnline: Boolean,
 }, 
 { 

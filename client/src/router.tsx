@@ -9,6 +9,7 @@ import SendMessage from "./pages/SendMessage";
 import ListOfUsers from "./pages/ListOfUsers";
 import CreateGroupChat from "./pages/CreateGroupChat";
 import ProfileSettings from "./pages/ProfileSettings";
+import UploadAvatar from "./pages/UploadAvatar";
 
 // router
 export const router = createBrowserRouter([
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/register/upload-avatar",
+    element: <UploadAvatar />,
   },
   {
     path: "/dashboard",

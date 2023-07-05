@@ -1,6 +1,7 @@
 const { GenerateSalt } = require("../../utils");
 const { UserSchema } = require("../");
 const bcrypt = require('bcryptjs');
+const { DEFAULT_AVATAR_PATH } = require("../../config");
 
 class UserModel {
     // find user by email
@@ -43,7 +44,17 @@ class UserModel {
         try {
             const salt = await GenerateSalt();
             const hashedPassword = await bcrypt.hash(password, salt)
-            const res = await UserSchema.create({ email, username, password: hashedPassword, isOnline: true, salt: salt });
+            const res = await UserSchema.create({ email, username, password: hashedPassword, isOnline: true, salt: salt, avatar: DEFAULT_AVATAR_PATH });
+            return res;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    // update the avatar of the user with the new filename/path
+    async UpdateAvatarById({ filename, userId }) {
+        try {
+            const res = await UserSchema.updateOne({ _id: userId }, { avatar: `uploads/${filename}` });
             return res;
         } catch (error) {
             throw new Error(error);

@@ -23,7 +23,7 @@ class UserService {
                     // set the online field to true
                     await this.#SetToOnline(user._id);
 
-                    return FormatData({id: user._id, username: user.username, token }); // return id with token
+                    return FormatData({id: user._id, username: user.username, avatar: user.avatar, token }); // return id with token
                 }
 
                 // incorrect password
@@ -51,6 +51,19 @@ class UserService {
 
                 return FormatData({id: user._id, username: user.username, token }); // return id with token
             }
+        } catch (error) {
+            throw new Error(error) ;
+        }
+    }
+
+    // register new user
+    async UpdateAvatar({ filename, userId }) {
+        try {
+            const res = await this.user.UpdateAvatarById({ filename, userId });
+            if(res.modifiedCount) {
+                return FormatData({ msg: "Success", status: 204 }); // return with message
+            }
+            return FormatData({ msg: "Avatar was not stored in the Db", status: 400 }); // return with message
         } catch (error) {
             throw new Error(error) ;
         }
@@ -121,7 +134,7 @@ class UserService {
             // }
 
             if(res) {
-                return FormatData({msg: "Successfully updated infomration", status: 204, username: res.username, email: res.email});
+                return FormatData({msg: "Successfully updated information", status: 204, username: res.username, email: res.email});
             }
             return FormatData({});
         } catch (error) {

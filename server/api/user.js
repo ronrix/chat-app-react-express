@@ -1,3 +1,4 @@
+const { UPLOAD } = require("../config");
 const { UserService, ContactService } = require("../services");
 const { DecodeToken, ValidateToken } = require("../utils");
 
@@ -41,6 +42,19 @@ module.exports = (app) => {
         }
     });
 
+    // upload avatar
+    app.post('/upload/image', [ValidateToken, UPLOAD.single('avatar')], async (req, res) => {
+        try {
+            const { filename } = req.file; // access the filename property
+            const { _id } = req.user; // get the user id
+            // store the filename in the database
+            const result = await service.UpdateAvatar({ filename, userId: _id });
+            return res.json({ ...result, avatar: filename }); // return the result
+        } catch (error) {
+            return res.status(400).json({ msg: error.message });
+        }
+    });
+
     // Logout
     app.get('/signout', [ValidateToken], async (req, res) => {
         try {
@@ -53,7 +67,7 @@ module.exports = (app) => {
 
             return res.status(200).json(data);
         } catch (error) {
-           return res.status(400).json({msg: error.message});
+            return res.status(400).json({msg: error.message});
         }
     });
 

@@ -19,6 +19,8 @@ const startServer = async () => {
     app.use(bodyParser.urlencoded({ extended: true })); 
     // initialize cookie parser
     app.use(cookieParser());
+    // define the route for serving images
+    app.use('/uploads', express.static('uploads'));
 
     // apis
     user(app);

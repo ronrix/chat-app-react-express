@@ -67,7 +67,7 @@ export default function Register() {
 
         // this redirects to the dashboard with loading the page, to refresh the cookies too
         // this prevents the redirecting loops from '/dashboard' to '/signin'
-        window.location.href = "/dashboard";
+        window.location.href = "/register/upload-avatar";
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.msg);

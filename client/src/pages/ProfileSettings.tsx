@@ -23,9 +23,11 @@ export default function ProfileSettings() {
 
     // input validation - prevent if none of the fields are filled
     if (
-      !fields.email.length &&
-      !fields.username.length &&
-      !fields.password.length
+      (!fields.email.length &&
+        !fields.username.length &&
+        !fields.password.length) ||
+      fields.email === auth()?.email ||
+      fields.username === auth()?.username
     ) {
       return;
     }
@@ -56,9 +58,7 @@ export default function ProfileSettings() {
     setFields({ ...fields, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
-    console.log("profile...");
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <form
@@ -85,7 +85,11 @@ export default function ProfileSettings() {
             <Avatar
               size='xxl'
               alt='avatar'
-              src='https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
+              src={
+                auth()?.avatar
+                  ? `${import.meta.env.VITE_BACKEND_URL}/${auth()?.avatar}`
+                  : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+              }
               className='ring-4 ring-green-500/30 border border-green-500 shadow-xl shadow-green-900/20 w-[200px] h-[200px]'
             />
           </Badge>

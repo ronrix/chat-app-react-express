@@ -58,6 +58,7 @@ export default function Login() {
             email: fields.email,
             id: data.id,
             username: data.username,
+            avatar: data.avatar,
           }, // store some data of the user to the cookie
         });
 
