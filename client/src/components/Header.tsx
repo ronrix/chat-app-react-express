@@ -48,6 +48,7 @@ function ProfileMenu({ handleLogout }: any) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const closeMenu = () => setIsMenuOpen(false);
   const navigate = useNavigate();
+  const auth = useAuthUser();
 
   const handleNavItem = (type: string, path: string) => {
     if (type === "Sign Out") {
@@ -72,7 +73,11 @@ function ProfileMenu({ handleLogout }: any) {
               size='sm'
               alt='candice wu'
               className='border border-blue-500 p-0.5'
-              src='https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
+              src={
+                auth()?.avatar
+                  ? `${import.meta.env.VITE_BACKEND_URL}/${auth()?.avatar}`
+                  : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+              }
             />
             <ChevronDownIcon
               strokeWidth={2.5}
