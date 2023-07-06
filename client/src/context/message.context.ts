@@ -1,13 +1,16 @@
 import {createContext} from 'react';
 
-export type MessageContextType = {
-    chatUser: { id: string; username: string; roomId: string; isOnline: boolean };
-    setChatUser: React.Dispatch<React.SetStateAction<{
+export type MessageContextStateType = {
         id: string;
         username: string;
         roomId: string;
         isOnline: boolean;
-    }>>;
+        avatar: string;
+}
+
+export type MessageContextType = {
+    chatUser: MessageContextStateType,
+    setChatUser: React.Dispatch<React.SetStateAction<MessageContextStateType>>;
  }
 
 // store user data for the chat composer

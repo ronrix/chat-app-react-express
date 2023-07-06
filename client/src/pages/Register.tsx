@@ -7,13 +7,12 @@ import {
   Spinner,
 } from "@material-tailwind/react";
 import { toast, ToastContainer } from "react-toastify";
-import Cookies from "universal-cookie";
 import axios from "../utils/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useIsAuthenticated, useSignIn } from "react-auth-kit";
+import Cookies from "universal-cookie";
 
 export default function Register() {
-  const cookies = new Cookies();
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
   const signIn = useSignIn();
@@ -49,9 +48,7 @@ export default function Register() {
 
       // redirect to dashboard if there is a token in the response
       if (data.token) {
-        // store the id to cookie
-        cookies.set("userId", data.id);
-        // store the id to cookie
+        // sign in the user, storing the user data to cookies
         signIn({
           token: data.token,
           expiresIn: 3600 * 2, // 2 hours expiration
@@ -81,7 +78,7 @@ export default function Register() {
   useEffect(() => {
     // check auth status then redirect to '/dashboard'
     if (isAuthenticated()) {
-      return navigate("/dashboard");
+      navigate("/dashboard");
     }
   }, []);
 
@@ -122,7 +119,7 @@ export default function Register() {
               value={fields.password}
             />
           </div>
-          <Button type='submit' className='mt-6' fullWidth>
+          <Button type='submit' className='mt-6 font-poppins' fullWidth>
             {loading ? <Spinner className='mx-auto h-4 w-4' /> : "Register"}
           </Button>
           <Typography color='gray' className='mt-4 text-center font-normal'>

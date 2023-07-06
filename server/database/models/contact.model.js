@@ -11,8 +11,8 @@ class ContactModel {
             .populate({
               path: 'contacts.message',
               populate: [
-                { path: 'from', select: ['_id', 'username', 'isOnline'], options: { sort: { createdAt: -1 } } },
-                { path: 'to', select: ['_id', 'username', 'isOnline'], options: { sort: { createdAt: -1 } } }
+                { path: 'from', select: ['_id', 'username', 'isOnline', 'avatar'], options: { sort: { createdAt: -1 } } },
+                { path: 'to', select: ['_id', 'username', 'isOnline', 'avatar'], options: { sort: { createdAt: -1 } } }
               ],
             })
             .exec();

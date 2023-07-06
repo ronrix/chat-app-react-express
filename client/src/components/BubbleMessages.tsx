@@ -46,7 +46,13 @@ export default function BubbleMessages(props: Props) {
         <Avatar
           size='sm'
           alt='avatar'
-          src='https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
+          src={
+            messageContext?.chatUser.avatar
+              ? `${import.meta.env.VITE_BACKEND_URL}/${
+                  messageContext?.chatUser.avatar
+                }`
+              : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+          }
           className='ring-4 ring-green-500/30 border border-green-500 shadow-xl shadow-green-900/20'
         />
         <span className='capitalize font-bold flex items-center gap-4'>
@@ -69,20 +75,41 @@ export default function BubbleMessages(props: Props) {
             return (
               <div
                 key={i}
-                className={`w-fit tracking-wider ${
+                className={`w-fit tracking-wider flex items-center gap-3 ${
                   msg.sender == auth()?.id ? "self-end" : "self-start"
                 }`}
               >
-                <span className='text-[12px] text-gray-300'>
-                  {moment(msg.createdAt).startOf("hour").fromNow()}
-                </span>
                 <div
-                  className={`font-poppins p-2 shadow rounded-md ${
-                    msg.sender === auth()?.id ? "bg-blue-300" : ""
+                  className={`${
+                    msg.sender === auth()?.id ? "order-1" : "order-2"
                   }`}
                 >
-                  <span dangerouslySetInnerHTML={{ __html: msg.msg }}></span>
+                  <span className='text-[12px] text-gray-300'>
+                    {moment(msg.createdAt).startOf("hour").fromNow()}
+                  </span>
+                  <div
+                    className={`font-poppins p-2 shadow rounded-md ${
+                      msg.sender === auth()?.id ? "bg-blue-300" : ""
+                    }`}
+                  >
+                    <span dangerouslySetInnerHTML={{ __html: msg.msg }}></span>
+                  </div>
                 </div>
+                <Avatar
+                  size='sm'
+                  alt='avatar'
+                  src={
+                    msg.sender === auth()?.id
+                      ? `${import.meta.env.VITE_BACKEND_URL}/${auth()?.avatar}`
+                      : messageContext?.chatUser.avatar
+                      ? `${import.meta.env.VITE_BACKEND_URL}/${
+                          messageContext?.chatUser.avatar
+                        }`
+                      : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                  }
+                  className={`ring-4 ring-green-500/30 border border-green-500 shadow-xl shadow-green-900/20
+                  ${msg.sender === auth()?.id ? "order-2" : "order-1"}`}
+                />
               </div>
             );
           })

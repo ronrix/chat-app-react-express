@@ -5,7 +5,7 @@ import defaultAvatar from "../assets/default-avatar.jpg";
 import React, { useRef, useState, useEffect } from "react";
 import axios from "../utils/axios";
 import { useNavigate } from "react-router-dom";
-import { useIsAuthenticated } from "react-auth-kit";
+import { useAuthUser, useIsAuthenticated } from "react-auth-kit";
 import { useCookies } from "react-cookie";
 
 export default function UploadAvatar() {
@@ -15,6 +15,7 @@ export default function UploadAvatar() {
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
   const [cookies, setCookie] = useCookies(["_auth_state"]);
+  const auth = useAuthUser();
 
   // function to set the new image. one for form and a state for displaying the new image
   const handleChangePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,35 +27,46 @@ export default function UploadAvatar() {
     e.preventDefault();
     const formData = new FormData();
 
-    // redirect to dashboard if no avatar was selected
-    if (!avatar) {
-      // set default avatar to the cookie state before redirectig to '/dashboard'
-      setCookie("_auth_state", {
-        ...cookies._auth_state,
-        avatar: "uploads/default-avatar.jpg",
-      });
-      return navigate("/dashboard");
+    // send or upload avatar, either use avatar is empty or not
+    // on the backend side, we will just store the default avatar if no avatar was uploaded
+    if (avatar) {
+      formData.append("avatar", avatar);
     }
-
-    // send or upload avatar if exists
-    formData.append("avatar", avatar);
     const { data } = await axios.post("/upload/image", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    if (data.status === 204) {
-      // update the cookie state with the new avatar
-      setCookie("_auth_state", { ...cookies._auth_state, avatar: data.avatar });
+
+    // server respond with 200 or 204 status code
+    // 200 for success with no uploaded avatar
+    // 204 for success with uploaded avatar
+    if (data.data.status === 204 || data.data.status === 200) {
+      // update the _auth cookie state with avatar value
+      // react-auth-kit authState is stored in a path '/'. so to update it we have to set the same path
+      const authState = JSON.stringify({
+        ...cookies._auth_state,
+        avatar: data.avatar,
+      });
+      // setCookie automatically encodes the value of the cookie
+      setCookie("_auth_state", authState, {
+        path: "/",
+        expires: new Date(Date.now() + 1 * (86400 * 1000)),
+      });
+      // this redirects to the dashboard with loading the page, to refresh the cookies too
+      window.location.href = "/dashboard";
     }
-    return navigate("/dashboard"); // redirect to dashboard
   };
 
   // check if user already created an account before proceeding
   // if not redirect back to '/register'
   useEffect(() => {
     if (!isAuthenticated()) {
-      return navigate("/register");
+      navigate("/register");
+    }
+    // check if avatar is already set, redirect to dashboard if avatar is already set up
+    if (auth()?.avatar) {
+      navigate("/dashboard");
     }
   }, []);
 
@@ -69,7 +81,7 @@ export default function UploadAvatar() {
         >
           You are now Registered!
         </Typography>
-        <Typography variant='p' color='gray' size='sm'>
+        <Typography variant='paragraph' color='gray' size='sm'>
           You can upload new avatar for your reference.
         </Typography>
 
@@ -82,7 +94,7 @@ export default function UploadAvatar() {
           <img
             src={avatarDisplay || defaultAvatar}
             alt='default avatar'
-            className='h-96 w-96 rounded-full mt-5'
+            className='h-96 w-96 rounded-full mt-5 object-cover'
           />
         </Badge>
         <input

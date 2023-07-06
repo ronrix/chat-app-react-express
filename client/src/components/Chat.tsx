@@ -23,10 +23,12 @@ type Props = {
   isOnline: boolean;
   roomId: string;
   messageId: string;
+  avatar: string;
 };
 
 export default function Chats(props: Props) {
-  const { username, currentMsg, id, isOnline, roomId, messageId } = props;
+  const { username, currentMsg, id, isOnline, roomId, messageId, avatar } =
+    props;
   const messageContext = useContext<MessageContextType | null>(MessageContext);
   const deleteContext = useContext<DeleteContextType | null>(DeleteContext);
   const auth = useAuthUser();
@@ -38,7 +40,7 @@ export default function Chats(props: Props) {
     socket.emit("store_user_to_room", { userId: auth()?.id, roomId }); // emit event to store the user to the server state
 
     // set the new message context containing messageId, roomId, and, user information of the recipient
-    messageContext?.setChatUser({ id, username, isOnline, roomId });
+    messageContext?.setChatUser({ id, username, isOnline, roomId, avatar });
   };
 
   useEffect(() => {
@@ -58,7 +60,11 @@ export default function Chats(props: Props) {
           <Avatar
             variant='circular'
             alt='alexander'
-            src='https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
+            src={
+              avatar
+                ? `${import.meta.env.VITE_BACKEND_URL}/${avatar}`
+                : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+            }
           />
         </ListItemPrefix>
         <div>

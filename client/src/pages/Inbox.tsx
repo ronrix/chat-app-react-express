@@ -64,35 +64,24 @@ export default function Inbox() {
             <Spinner className='mx-auto mt-10' />
           ) : contactLists?.contacts?.length ? (
             contactLists?.contacts?.map((msg: any) => {
-              // get the proper sender username of the message
-              const username =
+              // get the proper recipient to display the user properties
+              const recipient =
                 msg.message.to?._id === auth()?.id
-                  ? msg.message?.from?.username
-                  : msg.message?.to?.username;
-
-              // get the proper sender online status of the message
-              const isOnline =
-                msg.message.to?._id === auth()?.id
-                  ? msg.message?.from?.isOnline
-                  : msg.message?.to?.isOnline;
-
-              // get the proper sender id of the message
-              const senderId =
-                msg.message?.to?._id === auth()?.id
-                  ? msg.message?.from?._id
-                  : msg.message?.to?._id;
+                  ? msg.message?.from
+                  : msg.message?.to;
 
               return (
                 <Chat
                   key={msg.message._id}
-                  username={username} // display/pass the right username by checking if the userId is not equal to "to" or "from", then that's the thing we want to display
+                  username={recipient?.username} // display/pass the right username by checking if the userId is not equal to "to" or "from", then that's the thing we want to display
                   currentMsg={
                     msg.message.messages[msg.message.messages?.length - 1].msg
                   } // get the last message to display
-                  id={senderId} // sender id
-                  isOnline={isOnline}
+                  id={recipient?._id} // sender id
+                  isOnline={recipient?.isOnline}
                   roomId={msg.message.roomId}
                   messageId={msg.message._id}
+                  avatar={recipient?.avatar}
                 />
               );
             })

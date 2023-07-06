@@ -47,6 +47,9 @@ class UserModel {
             const res = await UserSchema.create({ email, username, password: hashedPassword, isOnline: true, salt: salt, avatar: DEFAULT_AVATAR_PATH });
             return res;
         } catch (error) {
+            if(error.code === 11000) {
+                throw new Error("Duplicate email");
+            }
             throw new Error(error);
         }
     }
@@ -54,7 +57,8 @@ class UserModel {
     // update the avatar of the user with the new filename/path
     async UpdateAvatarById({ filename, userId }) {
         try {
-            const res = await UserSchema.updateOne({ _id: userId }, { avatar: `uploads/${filename}` });
+            const avatar = filename ? filename : 'default-avatar.jpg';
+            const res = await UserSchema.updateOne({ _id: userId }, { avatar: `uploads/${avatar}` });
             return res;
         } catch (error) {
             throw new Error(error);

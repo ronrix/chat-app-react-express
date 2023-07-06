@@ -45,11 +45,15 @@ module.exports = (app) => {
     // upload avatar
     app.post('/upload/image', [ValidateToken, UPLOAD.single('avatar')], async (req, res) => {
         try {
-            const { filename } = req.file; // access the filename property
+            let filename = null;
+            if(req.file) {
+                filename = req.file.filename; // access the filename property to get the uploaded avatar's filename
+            }
             const { _id } = req.user; // get the user id
             // store the filename in the database
             const result = await service.UpdateAvatar({ filename, userId: _id });
-            return res.json({ ...result, avatar: filename }); // return the result
+            const avatar = filename ? `uploads/${filename}` : 'uploads/default-avatar.jpg';
+            return res.json({ ...result, avatar }); // return the result
         } catch (error) {
             return res.status(400).json({ msg: error.message });
         }

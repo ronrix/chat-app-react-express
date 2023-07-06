@@ -9,7 +9,6 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
 import { toast, ToastContainer } from "react-toastify";
-import ValidateAuthFields from "../utils/validate-inputs";
 import { useSignIn } from "react-auth-kit";
 import { useIsAuthenticated } from "react-auth-kit";
 
@@ -114,7 +113,7 @@ export default function Login() {
               value={fields.password}
             />
           </div>
-          <Button type='submit' className='mt-6' fullWidth>
+          <Button type='submit' className='mt-6 font-poppins' fullWidth>
             {loading ? <Spinner className='mx-auto h-4 w-4' /> : "Sign in"}
           </Button>
           <Typography color='gray' className='mt-4 text-center font-normal'>

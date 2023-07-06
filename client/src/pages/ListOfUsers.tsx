@@ -56,7 +56,7 @@ export default function ListOfUsers() {
                 username={user.username}
                 email={user.email}
                 isOnline={user.isOnline}
-                avatar={user.avatar}
+                avatar={user?.avatar}
               />
             );
           })

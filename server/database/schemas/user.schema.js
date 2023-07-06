@@ -8,10 +8,10 @@ const Schema = mongoose.Schema;
 */
 const UserSchema = new Schema({
     username: String,
-    email: String,
+    email: { type: Schema.Types.String, unique: true },
     password: String,
     salt: String, // for password hashing
-    avatar: { type: Schema.Types.String, default: 'uploads/default-avatar.jpg' }, // url or path to image
+    avatar: { type: Schema.Types.String }, // url or path to image
     isOnline: Boolean,
 }, 
 { 

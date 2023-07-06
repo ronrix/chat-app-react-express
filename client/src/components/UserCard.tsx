@@ -19,7 +19,7 @@ type Props = {
 };
 
 export default function UserCard(props: Props) {
-  const { username, email, isOnline } = props;
+  const { username, email, isOnline, avatar } = props;
   const navigate = useNavigate();
   const auth = useAuthUser();
 
@@ -28,11 +28,12 @@ export default function UserCard(props: Props) {
       <CardHeader floated={false} className='h-52'>
         <img
           src={
-            auth()?.avatar
-              ? `${import.meta.env.VITE_BACKEND_URL}/${auth()?.avatar}`
+            avatar
+              ? `${import.meta.env.VITE_BACKEND_URL}/${avatar}`
               : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
           }
           alt={`avatar of ${username}`}
+          className='object-cover h-full w-full'
         />
       </CardHeader>
       <CardBody className='text-center'>

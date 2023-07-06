@@ -3,7 +3,10 @@ import { ThemeProvider } from "@material-tailwind/react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
 import { AuthProvider } from "react-auth-kit";
-import { MessageContext } from "./context/message.context";
+import {
+  MessageContext,
+  MessageContextStateType,
+} from "./context/message.context";
 import { DeleteContext } from "./context/delete.context";
 
 const App = () => {
@@ -11,16 +14,12 @@ const App = () => {
     isDeleting: boolean;
     messageId: string;
   }>({ isDeleting: false, messageId: "" });
-  const [chatUser, setChatUser] = useState<{
-    id: string;
-    username: string;
-    roomId: string;
-    isOnline: boolean;
-  }>({
+  const [chatUser, setChatUser] = useState<MessageContextStateType>({
     id: "",
     username: "",
     roomId: "",
     isOnline: false,
+    avatar: "",
   });
   return (
     <ThemeProvider>
