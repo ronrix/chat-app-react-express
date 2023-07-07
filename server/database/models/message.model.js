@@ -21,12 +21,17 @@ class MessageModel {
 
             // filter results excluding messages that has "isDeletedBy" value of "userId"
             const results = messages[0].messages.filter(msg => {
-                // check if isDeletedBy does not contains value of "userId" then return the value
-                // else don't return any value
-                const isDeletedBy = msg.isDeletedBy.map(a => String(a)); // convert ObjectId to String to use "includes" array function
-                if(!isDeletedBy.includes(userId)) { 
-                    return msg;
+                // check if isDeletedBy exists. if not just return msg
+                // if is exists then only return the messages that are not deleted
+                if(msg?.isDeletedBy) {
+                    // check if isDeletedBy does not contains value of "userId" then return the value
+                    // else don't return any value
+                    const isDeletedBy =  msg?.isDeletedBy.map(a => String(a)); // convert ObjectId to String to use "includes" array function
+                    if(!isDeletedBy.includes(userId)) { 
+                        return msg;
+                    }
                 }
+                return msg;
             });
 
             // return in an array-object format with "messages" property
