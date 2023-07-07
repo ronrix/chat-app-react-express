@@ -9,6 +9,7 @@ const ContactSchema = new Schema({
     contacts: [
         {
             message: { type: Schema.Types.ObjectId, ref: 'message' }, // message id
+            isDeleted: { type: Schema.Types.Boolean }, 
             createdAt: { type: Schema.Types.Date }, 
         }
     ],

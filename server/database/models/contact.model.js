@@ -19,10 +19,12 @@ class ContactModel {
 
             // sort the contacts in descending order
             all.contacts.sort((a, b) => b.createdAt - a.createdAt);
+            // get only contacts that are not deleted
+            const res = all.contacts.filter(contact => !contact?.isDeleted);
 
-            return all;
+            return { contacts: res };
         } catch (error) {
-           throw new Error(error);
+            throw new Error(error);
         }
     }
 }

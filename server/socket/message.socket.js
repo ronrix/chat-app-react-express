@@ -34,7 +34,7 @@ module.exports.SocketGetMessages = (socket, io) => {
             // execute...
             if(roomId) {
                 try {
-                    const result = await service.GetMessages(roomId); 
+                    const result = await service.GetMessages(roomId, socket.request.user._id); 
                     socket.emit('get_all_msgs', {data: result.data[0].messages}); // send an event listener with result value
                 } catch (error) {
                     socket.emit('get_all_msgs', []); // send an event listener with wth no result

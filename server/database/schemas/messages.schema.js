@@ -13,6 +13,7 @@ const MessageSchema = new Schema({
             _id: Schema.Types.ObjectId,
             msg: String,
             sender: { type: Schema.Types.ObjectId, ref: 'user', require: false },
+            isDeletedBy: [ { type: Schema.Types.ObjectId, ref: 'user', unique: true } ], 
             createdAt: Schema.Types.Date,
         }
     ],

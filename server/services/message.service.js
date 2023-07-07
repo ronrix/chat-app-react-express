@@ -7,9 +7,9 @@ class MessageService {
     }
 
     // get message based on the room id
-    async GetMessages(roomId) {
+    async GetMessages(roomId, userId) {
         try {
-            const result = await this.messages.GetAllMessages(roomId);
+            const result = await this.messages.GetAllMessages(roomId, userId);
             return FormatData(result);
         } catch (error) {
             throw new Error(error);
