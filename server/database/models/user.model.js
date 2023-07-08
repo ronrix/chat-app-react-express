@@ -89,7 +89,8 @@ class UserModel {
     // update user's username
     async UpdateUserUsernameAndEmail(username, email, _id) {
         try {
-            const res = await UserSchema.findOneAndUpdate({ _id }, { username, email })
+            // set the {new:true} to get the latest data after updating
+            const res = await UserSchema.findOneAndUpdate({ _id }, { username, email }, { new: true });
             return res;
         } catch (error) {
             throw new Error(error);

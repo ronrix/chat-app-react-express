@@ -26,8 +26,7 @@ export default function ProfileSettings() {
       (!fields.email.length &&
         !fields.username.length &&
         !fields.password.length) ||
-      fields.email === auth()?.email ||
-      fields.username === auth()?.username
+      (fields.email === auth()?.email && fields.username === auth()?.username)
     ) {
       return;
     }
@@ -41,12 +40,19 @@ export default function ProfileSettings() {
       });
       // 204 means the information updated
       if (data.data.status === 204) {
-        // display message
-        setCookie("_auth_state", {
-          ...cookies,
+        // setCookie automatically encodes the value of the cookie
+        // update the auth cookie with the new user data
+        const authState = JSON.stringify({
+          ...cookies._auth_state,
           username: data.data.username,
           email: data.data.email,
         });
+        setCookie("_auth_state", authState, {
+          path: "/",
+          expires: new Date(Date.now() + 1 * (86400 * 1000)),
+        });
+
+        // display message
         toast.success(data.data.msg);
       }
     } catch (error: any) {
@@ -58,7 +64,9 @@ export default function ProfileSettings() {
     setFields({ ...fields, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log("mounted.");
+  }, [cookies]);
 
   return (
     <form
