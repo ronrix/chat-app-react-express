@@ -26,6 +26,26 @@ class MessageService {
         }
     }
 
+    // create new message with file uploading
+    async CreateMsgWithFiles({ roomId, msg, userId, idWhereToSend, filenames }) {
+        try {
+            // replace the msgs "img" src with the filenames
+            // the placeholder inside the "msg" is "img_src"
+            // the "i" variable is used to properly/orderly assign the src for each img element
+            let i = 0;
+            const replacedMsg = msg.replace(/img_src/g, (match, index) => {
+                const filename = filenames[i];
+                i++; // increment the index
+                return filename;
+            });
+
+            const result = await this.messages.CreateMessage({ roomId, msg: replacedMsg , userId, idWhereToSend });
+            return FormatData(result);
+        } catch (error) {
+            throw new Error(error) ;
+        }
+    }
+
    // create new message with email
     async NewCreate({ roomId, msg, userId, email }) {
         try {

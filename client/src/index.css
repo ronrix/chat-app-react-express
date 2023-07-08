@@ -7,3 +7,21 @@
 body {
   font-family: 'Poppins', 'Inter', sans-serif;
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* aligns the message and the img if there is one, of the chatbox in the inbox page */
+.chatbox-flex p {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}

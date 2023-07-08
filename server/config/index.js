@@ -10,7 +10,8 @@ const storage = multer.diskStorage({
         cb(null, `${Date.now()}-${file.originalname}`)
     }
 })
-const upload = multer({ storage });
+// add file upload limits to 3, this is for composing a message sending images
+const upload = multer({ storage, limits: { files: 3 } }); 
 
 // exporting env variables to shorten name when importing
 module.exports = {
@@ -18,5 +19,6 @@ module.exports = {
   DB_URL: process.env.MONGO_URI,
   APP_SECRET: process.env.APP_SECRET,
   DEFAULT_AVATAR_PATH: 'uploads/default-avatar.jpg',
-  UPLOAD: upload
+  UPLOAD: upload,
+  BACKEND_URL: process.env.BACKEND_URL
 };

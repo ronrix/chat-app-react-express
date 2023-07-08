@@ -44,6 +44,50 @@ module.exports.SocketGetMessages = (socket, io) => {
         });
     });
 
+    // get the updated messages
+    // this gets invoked only when the chat msg is too long, which means the sender is sending an image
+    // this evnet is doing the same as 'send_msg' event. which sends a notification and updated msgs
+    socket.on('get_msgs_update', async ({ roomId, idWhereToSend, userId, username }) => {
+        EventMiddleware(socket.request.token, async (error) => {
+            // handle error
+            if(error) {
+                socket.disconnect(); //disconnect the socket
+                return;
+            }
+
+            // execute...
+            // check requirements
+            if(roomId && userId && idWhereToSend && username) {
+                try {
+                    const result = await service.GetMessages(roomId, socket.request.user._id); 
+                    io.to(roomId).emit('get_all_msgs', {data: result.data[0].messages}); // send an event listener with result value
+
+                    // get the latest contacts 
+                    const contacts = await contactService.GetAllContactLists(idWhereToSend); 
+
+                    // Emit a notification event to the specific room
+                    // Get the recipient's socket ID from connectedUsers map
+                    const recipientSocketId = activeSockets.get(idWhereToSend);
+                    // send an event listener with result value to the recipient socket
+                    io.to(recipientSocketId).emit('get_all_contacts', contacts); 
+
+                    // check if the recipient and the user are in the same room
+                    const isBothJoinedIn = usersWhoJoinedRoom.find(el => el.userId === idWhereToSend)?.roomId === usersWhoJoinedRoom.find(el => el.userId === userId)?.roomId;
+                    if(isBothJoinedIn) { // if both are in the room don't send a notif
+                        return;
+                    }
+                    // send the notification if one is not in the room
+                    if (recipientSocketId) {
+                        // Emit a notification event to the recipient's socket
+                        io.to(recipientSocketId).emit('notification', `New message received from ${username}` );
+                    }
+                } catch (error) {
+                    io.to(roomId).emit('get_all_msgs', []); // send an event listener with wth no result
+                }
+            }
+        });
+    })
+
     // sending the msg with an existing user
     socket.on('send_msg', async ({roomId, msg, userId, idWhereToSend, username}) => {
         EventMiddleware(socket.request.token, async (error) => {
