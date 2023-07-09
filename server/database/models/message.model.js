@@ -31,7 +31,6 @@ class MessageModel {
                         return msg;
                     }
                 }
-                return msg;
             });
 
             // return in an array-object format with "messages" property
