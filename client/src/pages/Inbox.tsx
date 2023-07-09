@@ -16,8 +16,6 @@ export default function Inbox() {
   const signOut = useSignOut();
 
   useEffect(() => {
-    let isMounted = true;
-
     // when socket connection error, sign out the user
     socket.on("connect_error", (error) => {
       console.log(error);
@@ -30,7 +28,7 @@ export default function Inbox() {
 
     // listen for the event listener to store the data received from the server and display it to the DOM
     socket.on("get_all_contacts", ({ data }) => {
-      if (isMounted && data) {
+      if (data) {
         setContactLists(data);
       }
       setLoading(false);
@@ -48,12 +46,11 @@ export default function Inbox() {
 
     // Clean up the event listener when the component unmounts
     return () => {
-      isMounted = false;
       socket.off("get_all_contacts");
       socket.off("notification");
       socket.off("store_connected_user");
     };
-  }, [deleteContext?.deleteData.isDeleting, auth, signOut]);
+  }, [socket, deleteContext?.deleteData]);
 
   return (
     <div className='p-5 h-full relative'>

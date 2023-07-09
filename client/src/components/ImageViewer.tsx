@@ -13,7 +13,7 @@ export default function ImageViewer(props: Props) {
   return (
     <React.Fragment>
       <Card
-        className='h-64 w-96 cursor-pointer overflow-hidden transition-opacity hover:opacity-90'
+        className='h-64 max-w-96 cursor-pointer overflow-hidden transition-opacity hover:opacity-90'
         onClick={handleOpen}
       >
         <img

@@ -4,11 +4,9 @@ import { MessageContext, MessageContextType } from "../context/message.context";
 import ErrorMessage from "./ErrorMessage";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
-import moment from "moment";
 import { useAuthUser } from "react-auth-kit";
 import { socket } from "../pages/Dashboard";
-import ImageViewer from "./ImageViewer";
-import { renderToString } from "react-dom/server";
+import Bubble from "./Bubble";
 
 type Props = {
   msgs: [];
@@ -96,51 +94,7 @@ export default function BubbleMessages(props: Props) {
               );
 
               const text = msg.msg.replace(imgRegex, ""); // replace <img /> with empty string to exclude it from the message text
-              return (
-                <div
-                  key={i}
-                  className={`w-fit tracking-wider flex items-center gap-3 ${
-                    msg.sender == auth()?.id ? "self-end" : "self-start"
-                  }`}
-                >
-                  <div
-                    className={`${
-                      msg.sender === auth()?.id ? "order-1" : "order-2"
-                    }`}
-                  >
-                    <span className='text-[12px] text-gray-300'>
-                      {moment(msg.createdAt).startOf("hour").fromNow()}
-                    </span>
-                    <div
-                      className={`font-poppins p-2 shadow rounded-md ${
-                        msg.sender === auth()?.id ? "bg-blue-300" : ""
-                      }`}
-                    >
-                      <span dangerouslySetInnerHTML={{ __html: text }}></span>
-                      {imgSrcs?.map((src, i) => (
-                        <ImageViewer key={i} imgSrc={src} /> // render the ImageViewer component for each image to have image viewer functionality
-                      ))}
-                    </div>
-                  </div>
-                  <Avatar
-                    size='sm'
-                    alt='avatar'
-                    src={
-                      msg.sender === auth()?.id
-                        ? `${import.meta.env.VITE_BACKEND_URL}/${
-                            auth()?.avatar
-                          }`
-                        : messageContext?.chatUser.avatar
-                        ? `${import.meta.env.VITE_BACKEND_URL}/${
-                            messageContext?.chatUser.avatar
-                          }`
-                        : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
-                    }
-                    className={`ring-4 ring-green-500/30 border border-green-500 shadow-xl shadow-green-900/20
-                  ${msg.sender === auth()?.id ? "order-2" : "order-1"}`}
-                  />
-                </div>
-              );
+              return <Bubble key={i} text={text} msg={msg} imgSrcs={imgSrcs} />;
             }
           )
         ) : (
