@@ -17,7 +17,7 @@ Simple **Chat APP** created with React TS and Node + Express + Socket.IO
     - [] File upload
     - [x] Image upload
     - [x] Avatar
-    - [] Emojis
+    - [x] Emojis (Message Reaction Emojis)
     - [x] Image viewer
     - [x] WYSIWYG editor
     - [x] Online status
