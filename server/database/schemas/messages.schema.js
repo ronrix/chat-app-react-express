@@ -10,11 +10,10 @@ const Schema = mongoose.Schema;
 const MessageSchema = new Schema({
     messages: [
         {
-            _id: Schema.Types.ObjectId,
             msg: String,
             sender: { type: Schema.Types.ObjectId, ref: 'user', require: false },
-            isDeletedBy: [ { type: Schema.Types.ObjectId, ref: 'user', unique: true } ], 
-            reactions: [ { type: Schema.Types.String, unique: true }],
+            isDeletedBy: [{ type: Schema.Types.ObjectId }], 
+            reactions: [{ reactor: Schema.Types.ObjectId, reaction: Schema.Types.String }],
             createdAt: Schema.Types.Date,
         }
     ],

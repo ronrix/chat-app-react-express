@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { IconButton } from "@material-tailwind/react";
 import BubbleMessages from "../components/BubbleMessages";
-import { PaperAirplaneIcon, FaceSmileIcon } from "@heroicons/react/24/solid";
+import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { ToastContainer, toast } from "react-toastify";
 import { MessageContext, MessageContextType } from "../context/message.context";
 import { socket } from "../pages/Dashboard";
@@ -10,7 +10,6 @@ import { useAuthUser } from "react-auth-kit";
 // react quill
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { EmojiButton } from "@joeattardi/emoji-button";
 import axios from "../utils/axios";
 
 export default function ChatComposer() {
@@ -22,18 +21,6 @@ export default function ChatComposer() {
 
   const [composedMsg, setComposedMsg] = useState<string>("");
   const auth = useAuthUser();
-
-  const picker = new EmojiButton(); // initialize emoji button
-  // event when picking emoji from emoji button
-  picker.on("emoji", (selection) => {
-    // TODO: select an emoji an append it to the composeMsg state
-    setComposedMsg((prev) => prev + selection.emoji);
-  });
-
-  //  display emoji picker
-  const toggleEmojiPicker = (e: React.MouseEvent<HTMLDivElement>) => {
-    picker.togglePicker(e.currentTarget);
-  };
 
   const handleSubmitNewMsg = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // prevent form default functionality
@@ -97,6 +84,7 @@ export default function ChatComposer() {
 
       // reset field
       setComposedMsg("");
+      setFiles([]);
     } catch (error: any) {
       // display error message
       toast.error(error?.response?.data?.msg);
@@ -161,7 +149,6 @@ export default function ChatComposer() {
         );
       }
     }
-    console.log("hey");
 
     // // Clean up the event listener when the component unmounts
     return () => {
@@ -195,13 +182,6 @@ export default function ChatComposer() {
             <IconButton type='submit' variant='text'>
               <PaperAirplaneIcon className='text-blue-500 h-8 w-8' />
             </IconButton>
-          </div>
-          {/* emoji button */}
-          <div
-            className={`absolute top-2 right-5 p-1 bg-white h-6 w-6 flex items-center justify-center rounded-full cursor-pointer`}
-            onClick={toggleEmojiPicker}
-          >
-            <FaceSmileIcon className='h-5 w-5 text-gray-500' />
           </div>
         </form>
       </div>

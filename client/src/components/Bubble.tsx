@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAuthUser } from "react-auth-kit";
 import { MessageContext, MessageContextType } from "../context/message.context";
 import ImageViewer from "./ImageViewer";
@@ -6,47 +6,101 @@ import moment from "moment";
 import { Avatar } from "@material-tailwind/react";
 import { EmojiButton } from "@joeattardi/emoji-button";
 import DisplayReactions from "./DisplayReactions";
+import { socket } from "../pages/Dashboard";
 
 type Props = {
   msg: { msg: string; sender: string; createdAt: string };
   imgSrcs: string[] | undefined;
   text: string;
+  msgId: string;
+  msgReactions: [];
 };
 
+const picker = new EmojiButton({
+  categories: ["smileys", "flags"],
+}); // for emoji icons
+
 export default function Bubble(props: Props) {
-  const { msg, imgSrcs, text } = props;
+  const { msg, imgSrcs, text, msgId, msgReactions } = props;
   const messageContext = useContext<MessageContextType | null>(MessageContext);
   const auth = useAuthUser();
-  const [reactions, setReactions] = useState<string[]>([]);
-  const picker = new EmojiButton({
-    categories: ["smileys", "flags"],
-  }); // for emoji icons
+  const [reactions, setReactions] =
+    useState<{ _id: string; reactor: string; reaction: string }[]>(
+      msgReactions
+    );
+  const [emojiPickerEnabled, setEmojiPickerEnabled] = useState<boolean>(false);
 
   // state for opening hte modal of displaying the reactions
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
 
-  // emoji picker event store the emoji selected to our state
-  picker.on("emoji", (selection) => {
-    if (reactions.includes(selection.emoji)) return; // return if reactions array already have the emoji selected
-    setReactions((prev) => [...prev, selection.emoji]); // store the reactions in the client
-
-    // TODO: add the reaction to the DB with an api/socket
-  });
-
   //  display emoji picker
   const toggleEmojiPicker = (e: React.MouseEvent<HTMLDivElement>) => {
     picker.togglePicker(e.currentTarget);
+    setEmojiPickerEnabled((prev) => !prev);
   };
 
   // remove reaction from "reactions" state once the emoji was clicked
-  const removeReaction = (react: string) => {
-    const idx = reactions.indexOf(react); // get the index of the 'react' emoji
+  const removeReaction = (react: {
+    _id: string;
+    reaction: string;
+    reactor: string;
+  }) => {
+    // return if the reactor is the caller, then just return
+    if (react.reactor !== auth()?.id) return;
+
+    const idx = reactions.map((r) => r.reaction).indexOf(react.reaction); // get the index of the 'react' emoji
     reactions.splice(idx, 1); // remove the 'react' emoji from the state
     setReactions(() => [...reactions]); // set the new reactions in a state. this will re-render the componet to display the updated reactions
 
     // TODO: remove the reaction from the DB with an api/socket
+    socket.emit("delete_react", {
+      docId: messageContext?.chatUser.msgDocId,
+      msgId,
+      reactionId: react._id,
+    });
   };
+
+  // emoji picker event handler
+  const handleEmojiSelection = (selection: { text: string; emoji: string }) => {
+    // check if the selected emoji was already exists in the array of reactions
+    const isEmojiExists = reactions.some(
+      (react: { reactor: string; reaction: string }) => {
+        react.reaction.includes(selection.emoji);
+      }
+    );
+
+    if (isEmojiExists) return; // return if reactions array already have the emoji selected
+
+    // TODO: add the reaction to the DB with an api/socket
+    socket.emit("message_react", {
+      docId: messageContext?.chatUser.msgDocId,
+      msgId,
+      reaction: { reaction: selection.emoji, reactor: auth()?.id },
+    });
+  };
+
+  useEffect(() => {
+    // TODO: listen to socket events for getting the reactions of a message
+    socket.on("reactions", (data) => {
+      // update the state to have the reactions
+      setReactions(data);
+    });
+
+    // emoji picker event store the emoji selected to our state
+    if (emojiPickerEnabled) {
+      picker.on("emoji", handleEmojiSelection);
+    } else {
+      picker.off("emoji", handleEmojiSelection);
+    }
+
+    // clean up function. remove socket events on unmount
+    return () => {
+      socket.off("reactions");
+      socket.off("message_react");
+      picker.off("emoji", handleEmojiSelection);
+    };
+  }, [emojiPickerEnabled]);
 
   return (
     <div
@@ -68,15 +122,22 @@ export default function Bubble(props: Props) {
       >
         {reactions.length ? (
           <>
-            {reactions?.slice(0, 3).map((react: string, i: number) => (
-              <span
-                key={i}
-                className='text-[12px] cursor-pointer'
-                onClick={() => removeReaction(react)}
-              >
-                {react}
-              </span>
-            ))}
+            {reactions
+              ?.slice(0, 3)
+              .map(
+                (
+                  react: { _id: string; reaction: string; reactor: string },
+                  i: number
+                ) => (
+                  <span
+                    key={i}
+                    className='text-[12px] cursor-pointer'
+                    onClick={() => removeReaction(react)}
+                  >
+                    {react.reaction}
+                  </span>
+                )
+              )}
             {/* display the count of reactions after displaying the first 3 emojis */}
             {reactions.length > 3 && (
               <div

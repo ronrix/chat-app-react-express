@@ -10,7 +10,6 @@ import { toast, ToastContainer } from "react-toastify";
 import axios from "../utils/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useIsAuthenticated, useSignIn } from "react-auth-kit";
-import Cookies from "universal-cookie";
 
 export default function Register() {
   const navigate = useNavigate();

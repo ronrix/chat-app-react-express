@@ -20,6 +20,7 @@ const App = () => {
     roomId: "",
     isOnline: false,
     avatar: "",
+    msgDocId: "",
   });
   return (
     <ThemeProvider>

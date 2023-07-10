@@ -65,6 +65,26 @@ class MessageService {
             throw new Error(error) ;
         }
     }
+
+    // insert new reaction
+    async InsertReactionOnMsg({ docId, msgId, reaction }) {
+        try {
+            const result = await this.messages.InsertReaction({ docId, msgId, reaction });
+            return FormatData(result);
+        } catch (error) {
+            throw new Error(error) ;
+        }
+    }
+
+    // delete reaction emoji
+    async DeleteReactionOnMsg({ docId, msgId, reactionId }) {
+        try {
+            const result = await this.messages.DeleteReaction({ docId, msgId, reactionId });
+            return FormatData(result);
+        } catch (error) {
+            throw new Error(error) ;
+        }
+    }
 }
 
 module.exports = MessageService;

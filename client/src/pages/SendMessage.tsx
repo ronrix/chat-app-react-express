@@ -44,18 +44,6 @@ export default function SendMessage() {
         userId: auth()?.id, // send the userId
         email,
       });
-
-      // listen for "send_new_msg_response" to display a message
-      socket.on("send_new_msg_response", (data) => {
-        if (data.status === 201) {
-          // message is sent to recipient
-          toast.success(data.msg);
-          // reset the fields only when message was successfully sent
-          setMsg("");
-          return;
-        }
-        toast.error(data.msg);
-      });
     } catch (error: any) {
       toast.error(error?.response.data.msg);
     }
@@ -65,10 +53,24 @@ export default function SendMessage() {
     // emit socket event to store the userId to the server
     socket.emit("store_connected_user", auth()?.id);
 
+    // listen for "send_new_msg_response" to display a message
+    socket.on("send_new_msg_response", (data) => {
+      if (data.status === 201) {
+        // message is sent to recipient
+        toast.success(data.msg);
+        // reset the fields only when message was successfully sent
+        setMsg("");
+        return;
+      }
+      toast.error(data.msg);
+    });
+
     return () => {
       socket.off("store_user_to_room"); // remove event listener
+      socket.off("send_new_msg"); // remove event listener
+      socket.off("send_new_msg_response"); // remove event listener
     };
-  });
+  }, []);
 
   return (
     <div className='p-5 mt-10 h-full relative border'>

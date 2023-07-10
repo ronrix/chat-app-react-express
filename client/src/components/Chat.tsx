@@ -51,14 +51,21 @@ export default function Chats(props: Props) {
     socket.emit("store_user_to_room", { userId: auth()?.id, roomId }); // emit event to store the user to the server state
 
     // set the new message context containing messageId, roomId, and, user information of the recipient
-    messageContext?.setChatUser({ id, username, isOnline, roomId, avatar });
+    messageContext?.setChatUser({
+      id,
+      username,
+      isOnline,
+      roomId,
+      avatar,
+      msgDocId: messageId,
+    });
   };
 
   useEffect(() => {
     return () => {
       socket.off("join_room"); // remove the listener 'join_room' on unmount
     };
-  });
+  }, []);
 
   return (
     <ListItem>

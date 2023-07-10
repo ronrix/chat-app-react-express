@@ -82,7 +82,13 @@ export default function BubbleMessages(props: Props) {
         ) : msgs.length ? (
           msgs.map(
             (
-              msg: { msg: string; sender: string; createdAt: string },
+              msg: {
+                _id: string;
+                msg: string;
+                sender: string;
+                reactions: [];
+                createdAt: string;
+              },
               i: number
             ) => {
               const imgRegex = /<img.*?>/g; // regex to match <img /> tags
@@ -94,7 +100,16 @@ export default function BubbleMessages(props: Props) {
               );
 
               const text = msg.msg.replace(imgRegex, ""); // replace <img /> with empty string to exclude it from the message text
-              return <Bubble key={i} text={text} msg={msg} imgSrcs={imgSrcs} />;
+              return (
+                <Bubble
+                  key={i}
+                  text={text}
+                  msg={msg}
+                  imgSrcs={imgSrcs}
+                  msgId={msg._id}
+                  msgReactions={msg.reactions}
+                />
+              );
             }
           )
         ) : (

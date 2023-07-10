@@ -1,4 +1,5 @@
-const { MessageSchema, ContactSchema, UserSchema } = require('../')
+const { MessageSchema, ContactSchema, UserSchema } = require('../');
+const messagesSchema = require('../schemas/messages.schema');
 
 class MessageModel {
     async GetAllMessages(roomId, userId) {
@@ -107,10 +108,10 @@ class MessageModel {
                 // 2. this will check if the sender and the recipient already have a contact list of each other
                 // by looping through and checking them with messageId from 'contactlistOfBothUsers' and 'allContacts'
                 let flag = null;
-                for(let i=0; i<contactListOfBothUsers[0].contacts.length; i++) {
-                    for(let j=0; j<contactListOfBothUsers[1].contacts.length; j++) {
+                for(let i=0; i<contactListOfBothUsers[0]?.contacts.length; i++) {
+                    for(let j=0; j<contactListOfBothUsers[1]?.contacts.length; j++) {
                         // check
-                        if(contactListOfBothUsers[0].contacts[i].message.toString() === contactListOfBothUsers[1].contacts[j].message.toString()) {
+                        if(contactListOfBothUsers[0]?.contacts[i]?.message.toString() === contactListOfBothUsers[1]?.contacts[j]?.message.toString()) {
                             flag = i; // we can set i or j here to get the index of the match contact list
                             break;
                         }
@@ -241,6 +242,34 @@ class MessageModel {
             throw new Error("Failed to delete the contact");
         } catch (error) {
             throw new Error(error) ;
+        }
+    }
+
+    // insert new reaction
+    async InsertReaction({docId, msgId, reaction}) {
+        try {
+            const result = await messagesSchema.findOneAndUpdate(
+                { _id: docId, messages: { $elemMatch: { _id: msgId } } }, 
+                { $push: { 'messages.$.reactions': reaction } }, 
+                { new: true });
+            return result;
+        } catch (error) {
+            throw new Error(error.message) ;
+        }
+    }
+
+    // delete reaction emoji
+    async DeleteReaction({docId, msgId, reactionId}) {
+        try {
+            console.log(reactionId);
+            const result = await messagesSchema.findOneAndUpdate(
+                { _id: docId, messages: { $elemMatch: { _id: msgId } } }, 
+                { $pull: { 'messages.$.reactions': { _id: reactionId } } }, 
+                { new: true });
+
+            return result;
+        } catch (error) {
+            throw new Error(error.message) ;
         }
     }
 }

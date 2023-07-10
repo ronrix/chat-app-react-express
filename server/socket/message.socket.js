@@ -101,8 +101,11 @@ module.exports.SocketGetMessages = (socket, io) => {
             // check requirements
             if(roomId && msg && userId && idWhereToSend) {
                 try {
-                    const result = await service.Create({ roomId, msg, userId, idWhereToSend });
-                    io.to(roomId).emit('get_all_msgs', { data: result?.data?.messages }); // send the new message
+                    await service.Create({ roomId, msg, userId, idWhereToSend });
+
+                    // get the proper data messages excluding messages that are deleted for this user
+                    const msgsResult = await service.GetMessages(roomId, socket.request.user._id); 
+                    io.to(roomId).emit('get_all_msgs', { data:  msgsResult.data[0].messages}); // send the new message
 
                     // get the latest contacts 
                     const contacts = await contactService.GetAllContactLists(idWhereToSend); 
@@ -174,4 +177,70 @@ module.exports.SocketGetMessages = (socket, io) => {
             }
         });
     });
+
+    // create message reaction event listner
+    socket.on('message_react', ({ docId, msgId, reaction }) => {
+        EventMiddleware(socket.request.token, async (error) => {
+            // handle error
+            if(error) {
+                socket.disconnect(); //disconnect the socket
+                return;
+            }
+
+            // execute logic
+            try {
+                const { data } = await service.InsertReactionOnMsg({ docId, msgId, reaction });
+
+                // get the idWhereToSend from the result
+                // if the userId is not equal to "to" for "from" field store the later
+                const idWhereToSend = data?.to === socket.request.user._id ? data?.from : data?.to;
+
+                // get the username 
+                const { data: user } = await userService.GetUser(socket.request.user._id);
+
+                // Emit a notification event to the specific room
+                // Get the recipient's socket ID from connectedUsers map
+                const recipientSocketId = activeSockets.get(idWhereToSend.toString());
+                io.to(recipientSocketId).emit('notification', `New message received from ${user?.username}` ); // send the notification
+
+                // send an event listener with result value to the recipient socket
+                const reactions = data.messages[0].reactions; // get only the reactions
+                io.to(recipientSocketId).emit('reactions', reactions);  // send the updated reactions to the recipient
+                socket.emit('reactions', reactions);  // send the updated reactions to the caller
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    })
+
+    // delete message reaction event listner
+    socket.on('delete_react', ({ docId, msgId, reactionId }) => {
+        EventMiddleware(socket.request.token, async (error) => {
+            // handle error
+            if(error) {
+                socket.disconnect(); //disconnect the socket
+                return;
+            }
+
+            // execute logic
+            try {
+                const { data } = await service.DeleteReactionOnMsg({ docId, msgId, reactionId });
+
+                // get the idWhereToSend from the result
+                // if the userId is not equal to "to" for "from" field store the later
+                const idWhereToSend = data?.to === socket.request.user._id ? data?.from : data?.to;
+
+                // Emit a notification event to the specific room
+                // Get the recipient's socket ID from connectedUsers map
+                const recipientSocketId = activeSockets.get(idWhereToSend.toString());
+
+                // send an event listener with result value to the recipient socket
+                const reactions = data.messages[0].reactions; // get only the reactions
+                io.to(recipientSocketId).emit('reactions', reactions);  // send the updated reactions
+                socket.emit('reactions', reactions);  // send the updated reactions to the caller
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    })
 }

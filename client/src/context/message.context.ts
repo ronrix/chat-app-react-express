@@ -6,6 +6,7 @@ export type MessageContextStateType = {
         roomId: string;
         isOnline: boolean;
         avatar: string;
+        msgDocId: string;
 }
 
 export type MessageContextType = {
