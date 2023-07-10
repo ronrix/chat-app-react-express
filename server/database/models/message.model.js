@@ -261,7 +261,6 @@ class MessageModel {
     // delete reaction emoji
     async DeleteReaction({docId, msgId, reactionId}) {
         try {
-            console.log(reactionId);
             const result = await messagesSchema.findOneAndUpdate(
                 { _id: docId, messages: { $elemMatch: { _id: msgId } } }, 
                 { $pull: { 'messages.$.reactions': { _id: reactionId } } }, 

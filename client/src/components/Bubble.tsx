@@ -73,6 +73,7 @@ export default function Bubble(props: Props) {
     if (isEmojiExists) return; // return if reactions array already have the emoji selected
 
     // TODO: add the reaction to the DB with an api/socket
+    setEmojiPickerEnabled(false); // set emoji picker enabled to false after emoji selection
     socket.emit("message_react", {
       docId: messageContext?.chatUser.msgDocId,
       msgId,

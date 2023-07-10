@@ -11,7 +11,7 @@ import { useAuthUser } from "react-auth-kit";
 type Props = {
   open: boolean;
   handleOpen: () => void;
-  reactions: { reactor: string; reaction: string }[];
+  reactions: { _id: string; reactor: string; reaction: string }[];
   removeReaction: (react: {
     _id: string;
     reaction: string;
@@ -28,16 +28,19 @@ export default function DisplayReactions(props: Props) {
   return (
     <Fragment>
       <Dialog open={open} handler={handleOpen} size='xs'>
-        <DialogHeader>Message Reactions.</DialogHeader>
+        <DialogHeader>Reactions.</DialogHeader>
         <DialogBody divider>
           <section className='flex flex-col items-center justify-center'>
             {reactions.length &&
               reactions.map(
-                (react: { reactor: string; reaction: string }, i) => {
+                (
+                  react: { _id: string; reactor: string; reaction: string },
+                  i
+                ) => {
                   return (
                     <div key={i} className='flex items-center justify-between'>
                       <span key={i} className='text-3xl'>
-                        {react}
+                        {react.reaction}
                       </span>
                       {react?.reactor === auth()?.id && (
                         <Button
