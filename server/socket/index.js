@@ -47,8 +47,8 @@ module.exports.StartServerWithSocketIO = (app) => {
             // For example, you can send an error message and disconnect the socket
             console.log(error.message);
             // next(error.message)
-            next(error.message);
-            socket.disconnect(); 
+            next(new Error(error));
+            socket.disconnect();
         }
     }
 

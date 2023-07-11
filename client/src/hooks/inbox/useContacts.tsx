@@ -11,14 +11,13 @@ export default function useContacts() {
   const auth = useAuthUser();
   const signOut = useSignOut();
 
-  useEffect(() => {
-    // when socket connection error, sign out the user
-    socket.on("connect_error", (error) => {
-      console.log(error);
-      setLoading(false);
-      signOut();
-    });
+  // when socket connection error, sign out the user
+  socket.on("connect_error", (error) => {
+    setLoading(false);
+    signOut();
+  });
 
+  useEffect(() => {
     // emit socket event to get all contact lists of the authenticated user
     socket.emit("get_all_contacts", auth()?.id);
 
