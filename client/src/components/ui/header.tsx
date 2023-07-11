@@ -16,7 +16,7 @@ import {
   Bars2Icon,
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-import axios from "../utils/axios";
+import axios from "../../utils/axios";
 import { useAuthUser, useSignOut } from "react-auth-kit";
 import { InboxIcon, UserGroupIcon } from "@heroicons/react/24/solid";
 

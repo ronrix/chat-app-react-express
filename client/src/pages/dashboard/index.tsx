@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import Sidebar from "../components/sidebar";
+import Sidebar from "../../components/ui/sidebar";
 import { ToastContainer } from "react-toastify";
 import { Outlet, useNavigate } from "react-router-dom";
-import Header from "../components/header";
+import Header from "../../components/ui/header";
 
 // socket
 import { io } from "socket.io-client";

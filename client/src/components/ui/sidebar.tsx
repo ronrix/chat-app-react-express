@@ -5,7 +5,7 @@ import {
   PopoverContent,
   Avatar,
 } from "@material-tailwind/react";
-import axios from "../utils/axios";
+import axios from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
 import NavList from "./nav-list";
 import { useAuthUser, useSignOut } from "react-auth-kit";

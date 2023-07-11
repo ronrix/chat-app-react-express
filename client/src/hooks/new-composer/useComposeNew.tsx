@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react";
-import ReactQuill from "react-quill";
-import { Button, Input } from "@material-tailwind/react";
-import "react-quill/dist/quill.snow.css";
-import { ChevronLeftIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import { useLocation, useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import { uid } from "uid";
-import { socket } from "./dashboard";
 import { useAuthUser } from "react-auth-kit";
-import { ValidateEmail } from "../utils/validate-inputs";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { ValidateEmail } from "../../utils/validate-inputs";
+import { socket } from "../../pages/dashboard";
+import { uid } from "uid";
 
-export default function SendMessage() {
+export default function useComposeNew() {
   const location = useLocation();
   const [email, setEmail] = useState<string>(() =>
     location.search ? location.search.split("=")[1] : ""
@@ -72,40 +68,5 @@ export default function SendMessage() {
     };
   }, []);
 
-  return (
-    <div className='p-5 mt-10 h-full relative border'>
-      <Button
-        variant='text'
-        className='border mb-3'
-        onClick={() => navigate(-1)}
-      >
-        <ChevronLeftIcon className='h-5 w-5' />
-      </Button>
-      <h3>Create new message</h3>
-      <form onSubmit={handleSendNewMsg}>
-        <div className='w-full mt-3'>
-          <Input
-            label='Insert the email where to send ex. (name@email.com)'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        <h5 className='mt-10 text-gray-500 text-sm'>Compose a message</h5>
-        <ReactQuill
-          id='msg'
-          theme='snow'
-          value={msg}
-          onChange={setMsg}
-          className='h-[400px]'
-        />
-        <Button type='submit' className='ml-auto mr-0 mt-20 flex items-center'>
-          <PaperAirplaneIcon className='h-5 w-5' />
-          Send message
-        </Button>
-      </form>
-
-      <ToastContainer />
-    </div>
-  );
+  return { navigate, handleSendNewMsg, email, setEmail, msg, setMsg };
 }

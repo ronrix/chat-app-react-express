@@ -7,9 +7,9 @@ import {
   DialogFooter,
   Typography,
 } from "@material-tailwind/react";
-import axios from "../utils/axios";
+import axios from "../../utils/axios";
 import { toast } from "react-toastify";
-import { DeleteContext, DeleteContextType } from "../context/delete.context";
+import { DeleteContext, DeleteContextType } from "../../context/delete.context";
 
 export default function DeleteVerification() {
   const deleteContext = useContext<DeleteContextType | null>(DeleteContext);

@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
-import UserCard from "../components/user-card";
-import axios from "../utils/axios";
-import { Spinner } from "@material-tailwind/react";
-import ErrorMessage from "../components/error-messages";
 import { useSignOut } from "react-auth-kit";
-import { socket } from "./dashboard";
+import axios from "../../utils/axios";
+import { socket } from "../../pages/dashboard";
 import { toast } from "react-toastify";
 
-export default function ListOfUsers() {
+export default function useGetUsers() {
   const [users, setUsers] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const signOut = useSignOut();
@@ -41,29 +38,5 @@ export default function ListOfUsers() {
     };
   }, []);
 
-  return (
-    <div className='p-5 h-full relative'>
-      <h2 className='font-bold text-2xl'>Users</h2>
-
-      <div className='grid gap-16 grid-cols-fluid mt-5'>
-        {loading ? (
-          <Spinner className='mx-auto h-5 w-5' />
-        ) : users.length ? (
-          users.map((user: any) => {
-            return (
-              <UserCard
-                key={user._id}
-                username={user.username}
-                email={user.email}
-                isOnline={user.isOnline}
-                avatar={user?.avatar}
-              />
-            );
-          })
-        ) : (
-          <ErrorMessage msg='No lists of users found' />
-        )}
-      </div>
-    </div>
-  );
+  return { users, loading };
 }

@@ -14,15 +14,15 @@ export const router = createBrowserRouter([
   },
   {
     path: "/signin",
-    Component: lazy(() => import("./pages/login")),
+    Component: lazy(() => import("./pages/auth/login")),
   },
   {
     path: "/register",
-    Component: lazy(() => import("./pages/register")),
+    Component: lazy(() => import("./pages/auth/register")),
   },
   {
     path: "/register/upload-avatar",
-    Component: lazy(() => import("./pages/upload-avatar")),
+    Component: lazy(() => import("./pages/auth/upload-avatar")),
   },
   {
     path: "/dashboard",
@@ -34,28 +34,30 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "inbox",
-        Component: lazy(() => import("./pages/inbox")),
+        Component: lazy(() => import("./pages/dashboard/inbox")),
       },
       {
         path: "/dashboard/list-of-users",
-        Component: lazy(() => import("./pages/list-of-users")),
+        Component: lazy(() => import("./pages/dashboard/list-of-users")),
       },
       {
         path: "/dashboard/create-group",
-        Component: lazy(() => import("./pages/create-group-chat")),
+        Component: lazy(
+          () => import("./pages/dashboard/groupchat/create-group-chat")
+        ),
       },
       {
         path: "/dashboard/profile-settings",
-        Component: lazy(() => import("./pages/profile-settings")),
+        Component: lazy(() => import("./pages/dashboard/profile")),
       },
       {
         path: "/dashboard/inbox/:id",
-        Component: lazy(() => import("./pages/chat-composer")),
+        Component: lazy(() => import("./pages/dashboard/chat-composer")),
       },
     ],
   },
   {
     path: "/dashboard/send-message",
-    Component: lazy(() => import("./pages/send-message")),
+    Component: lazy(() => import("./pages/dashboard/new-composer")),
   },
 ]);

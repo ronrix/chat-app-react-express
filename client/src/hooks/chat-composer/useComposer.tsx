@@ -1,23 +1,20 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { IconButton } from "@material-tailwind/react";
-import BubbleMessages from "../components/bubble-messages";
-import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import { ToastContainer, toast } from "react-toastify";
-import { MessageContext, MessageContextType } from "../context/message.context";
-import { socket } from "./dashboard";
+import {
+  MessageContext,
+  MessageContextType,
+} from "../../context/message.context";
 import { useAuthUser } from "react-auth-kit";
-
-// react quill
+import { socket } from "../../pages/dashboard";
+import axios from "../../utils/axios";
+import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import axios from "../utils/axios";
 
-export default function ChatComposer() {
+export default function useComposer() {
   const [msgs, setMsgs] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const messageContext = useContext<MessageContextType | null>(MessageContext);
   const [files, setFiles] = useState<File[]>([]);
-  const quillRef = useRef<any>(null);
+  const quillRef = useRef<ReactQuill>(null);
 
   const [composedMsg, setComposedMsg] = useState<string>("");
   const auth = useAuthUser();
@@ -107,38 +104,38 @@ export default function ChatComposer() {
     // image handler for react quill
     // this is a reference to the ReactQuill component handling image event
     // we can get the uploaded image file and set it to our react state to send it to our backend
-    quillRef?.current
-      .getEditor()
-      .getModule("toolbar")
-      .addHandler("image", () => {
-        const input = document.createElement("input");
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", "image/*");
-        input.click();
-        input.onchange = async () => {
-          if (!input.files || !input?.files?.length || !input?.files?.[0])
-            return;
-          const editor = quillRef?.current?.getEditor();
-          const file = input.files[0];
-
-          // store the selected files into the state
-          setFiles((prev) => [...prev, file]);
-
-          const range = editor.getSelection(true);
-
-          // convert file image to base64 to display the image to the ReactQuill text input
-          const reader = new FileReader();
-          reader.onload = function (event: ProgressEvent<FileReader>) {
-            const base64Image = event?.target?.result;
-            editor.insertEmbed(range.index, "image", base64Image);
-          };
-
-          reader.readAsDataURL(file); // invoke the function with the file
-        };
-      });
-
-    // change style of react-quill editor 'ql-editor'
     if (quillRef.current) {
+      quillRef?.current
+        .getEditor()
+        .getModule("toolbar")
+        .addHandler("image", () => {
+          const input = document.createElement("input");
+          input.setAttribute("type", "file");
+          input.setAttribute("accept", "image/*");
+          input.click();
+          input.onchange = async () => {
+            if (!input.files || !input?.files?.length || !input?.files?.[0])
+              return;
+            const editor = quillRef?.current?.getEditor();
+            const file = input.files[0];
+
+            // store the selected files into the state
+            setFiles((prev) => [...prev, file]);
+
+            const range = editor?.getSelection(true);
+
+            // convert file image to base64 to display the image to the ReactQuill text input
+            const reader = new FileReader();
+            reader.onload = function (event: ProgressEvent<FileReader>) {
+              const base64Image = event?.target?.result;
+              editor?.insertEmbed(range.index, "image", base64Image);
+            };
+
+            reader.readAsDataURL(file); // invoke the function with the file
+          };
+        });
+
+      // change style of react-quill editor 'ql-editor'
       const editorElement: Element | null =
         document.querySelector(".ql-editor");
       if (editorElement) {
@@ -156,36 +153,12 @@ export default function ChatComposer() {
     };
   }, [socket, quillRef]); // Empty dependency array to run the effect only once during component mount
 
-  return (
-    <main className='mt-8 flex-1 flex flex-col'>
-      <BubbleMessages msgs={msgs} loading={loading} />
-
-      {/* composer */}
-      <div className='rounded-xl relative border w-full'>
-        <form onSubmit={handleSubmitNewMsg}>
-          <ReactQuill
-            ref={quillRef}
-            theme='snow'
-            modules={{
-              toolbar: [
-                ["bold", "italic", "strike", "underline"],
-                ["code-block"],
-                ["link", "image"],
-              ],
-            }}
-            placeholder='Write a message'
-            onChange={setComposedMsg}
-            value={composedMsg}
-            className='shadow'
-          />
-          <div className='absolute bottom-0 rounded-full right-2'>
-            <IconButton type='submit' variant='text'>
-              <PaperAirplaneIcon className='text-blue-500 h-8 w-8' />
-            </IconButton>
-          </div>
-        </form>
-      </div>
-      <ToastContainer />
-    </main>
-  );
+  return {
+    loading,
+    msgs,
+    quillRef,
+    handleSubmitNewMsg,
+    setComposedMsg,
+    composedMsg,
+  };
 }
