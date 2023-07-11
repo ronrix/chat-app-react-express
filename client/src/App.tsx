@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { ThemeProvider } from "@material-tailwind/react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
@@ -32,7 +32,15 @@ const App = () => {
       >
         <MessageContext.Provider value={{ chatUser, setChatUser }}>
           <DeleteContext.Provider value={{ deleteData, setDeleteData }}>
-            <RouterProvider router={router} />
+            <Suspense
+              fallback={
+                <div className='mx-auto flex items-center justify-center h-screen w-screen'>
+                  loading...
+                </div>
+              }
+            >
+              <RouterProvider router={router} />
+            </Suspense>
           </DeleteContext.Provider>
         </MessageContext.Provider>
       </AuthProvider>

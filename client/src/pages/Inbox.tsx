@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import Chat from "../components/Chat";
 import { List, Card, Spinner } from "@material-tailwind/react";
-import ErrorMessage from "../components/ErrorMessage";
-import { socket } from "../pages/Dashboard";
+import ErrorMessage from "../components/error-messages";
+import { socket } from "./dashboard";
 import { useAuthUser, useSignOut } from "react-auth-kit";
-import CreateNewBubble from "../components/CreateNewBubble";
+import CreateNewBubble from "../components/create-new-bubble";
 import { toast } from "react-toastify";
 import { DeleteContext, DeleteContextType } from "../context/delete.context";
 

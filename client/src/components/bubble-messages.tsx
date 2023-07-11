@@ -1,12 +1,12 @@
 import { Avatar, Badge, IconButton, Spinner } from "@material-tailwind/react";
 import { useContext, useRef, useEffect } from "react";
 import { MessageContext, MessageContextType } from "../context/message.context";
-import ErrorMessage from "./ErrorMessage";
+import ErrorMessage from "./error-messages";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import { useAuthUser } from "react-auth-kit";
-import { socket } from "../pages/Dashboard";
-import Bubble from "./Bubble";
+import { socket } from "../pages/dashboard";
+import Bubble from "./bubble";
 
 type Props = {
   msgs: [];

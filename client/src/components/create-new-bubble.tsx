@@ -8,10 +8,9 @@ import {
 } from "@material-tailwind/react";
 import {
   PlusIcon,
-  UserPlusIcon,
   UserGroupIcon,
+  PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
-import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 
 export default function CreateNewBubble() {
@@ -33,13 +32,6 @@ export default function CreateNewBubble() {
           </IconButton>
         </SpeedDialHandler>
         <SpeedDialContent>
-          <SpeedDialAction className='relative'>
-            <UserPlusIcon
-              className='h-5 w-5'
-              onClick={() => navigate("/dashboard/people")}
-            />
-            <Typography {...labelProps}>People</Typography>
-          </SpeedDialAction>
           <SpeedDialAction className='relative'>
             <UserGroupIcon
               className='h-5 w-5'

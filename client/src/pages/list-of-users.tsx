@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import UserCard from "../components/UserCard";
+import UserCard from "../components/user-card";
 import axios from "../utils/axios";
 import { Spinner } from "@material-tailwind/react";
-import ErrorMessage from "../components/ErrorMessage";
+import ErrorMessage from "../components/error-messages";
 import { useSignOut } from "react-auth-kit";
-import { socket } from "./Dashboard";
+import { socket } from "./dashboard";
 import { toast } from "react-toastify";
 
 export default function ListOfUsers() {

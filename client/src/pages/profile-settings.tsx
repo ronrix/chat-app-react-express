@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Avatar, Badge, Button, Input } from "@material-tailwind/react";
 import { useAuthUser } from "react-auth-kit";
-import ImageMenu from "../components/ImageMenu";
+import ImageMenu from "../components/image-menu";
 import axios from "../utils/axios";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";

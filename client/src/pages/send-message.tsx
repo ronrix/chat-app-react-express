@@ -6,7 +6,7 @@ import { ChevronLeftIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { uid } from "uid";
-import { socket } from "./Dashboard";
+import { socket } from "./dashboard";
 import { useAuthUser } from "react-auth-kit";
 import { ValidateEmail } from "../utils/validate-inputs";
 

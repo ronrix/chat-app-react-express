@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { useAuthUser } from "react-auth-kit";
 import { MessageContext, MessageContextType } from "../context/message.context";
-import ImageViewer from "./ImageViewer";
+import ImageViewer from "./image-viewer";
 import moment from "moment";
 import { Avatar } from "@material-tailwind/react";
 import { EmojiButton } from "@joeattardi/emoji-button";
-import DisplayReactions from "./DisplayReactions";
-import { socket } from "../pages/Dashboard";
+import DisplayReactions from "./display-reaction";
+import { socket } from "../pages/dashboard";
 
 type Props = {
   msg: { msg: string; sender: string; createdAt: string };

@@ -1,15 +1,10 @@
+import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Inbox from "./pages/Inbox";
+
+// use lazy
+const Dashboard = lazy(() => import("./pages/dashboard"));
+
 import { RequireAuth } from "react-auth-kit";
-import ChatComposer from "./pages/ChatComposer";
-import SendMessage from "./pages/SendMessage";
-import ListOfUsers from "./pages/ListOfUsers";
-import CreateGroupChat from "./pages/CreateGroupChat";
-import ProfileSettings from "./pages/ProfileSettings";
-import UploadAvatar from "./pages/UploadAvatar";
 
 // router
 export const router = createBrowserRouter([
@@ -19,15 +14,15 @@ export const router = createBrowserRouter([
   },
   {
     path: "/signin",
-    element: <Login />,
+    Component: lazy(() => import("./pages/login")),
   },
   {
     path: "/register",
-    element: <Register />,
+    Component: lazy(() => import("./pages/register")),
   },
   {
     path: "/register/upload-avatar",
-    element: <UploadAvatar />,
+    Component: lazy(() => import("./pages/upload-avatar")),
   },
   {
     path: "/dashboard",
@@ -39,28 +34,28 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "inbox",
-        element: <Inbox />,
+        Component: lazy(() => import("./pages/inbox")),
       },
       {
         path: "/dashboard/list-of-users",
-        element: <ListOfUsers />,
+        Component: lazy(() => import("./pages/list-of-users")),
       },
       {
         path: "/dashboard/create-group",
-        element: <CreateGroupChat />,
+        Component: lazy(() => import("./pages/create-group-chat")),
       },
       {
         path: "/dashboard/profile-settings",
-        element: <ProfileSettings />,
+        Component: lazy(() => import("./pages/profile-settings")),
       },
       {
         path: "/dashboard/inbox/:id",
-        element: <ChatComposer />,
+        Component: lazy(() => import("./pages/chat-composer")),
       },
     ],
   },
   {
     path: "/dashboard/send-message",
-    element: <SendMessage />,
+    Component: lazy(() => import("./pages/send-message")),
   },
 ]);

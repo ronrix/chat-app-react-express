@@ -7,7 +7,7 @@ import {
 } from "@material-tailwind/react";
 import axios from "../utils/axios";
 import { useNavigate } from "react-router-dom";
-import NavList from "./NavList";
+import NavList from "./nav-list";
 import { useAuthUser, useSignOut } from "react-auth-kit";
 
 export default function Sidebar() {

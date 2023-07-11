@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { IconButton } from "@material-tailwind/react";
-import BubbleMessages from "../components/BubbleMessages";
+import BubbleMessages from "../components/bubble-messages";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { ToastContainer, toast } from "react-toastify";
 import { MessageContext, MessageContextType } from "../context/message.context";
-import { socket } from "../pages/Dashboard";
+import { socket } from "./dashboard";
 import { useAuthUser } from "react-auth-kit";
 
 // react quill

@@ -10,10 +10,10 @@ import {
 import { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { MessageContext, MessageContextType } from "../context/message.context";
-import { socket } from "../pages/Dashboard";
+import { socket } from "../pages/dashboard";
 import { useAuthUser } from "react-auth-kit";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import DeleteVerification from "./DeleteVerification";
+import DeleteVerification from "./delete-verification";
 import { DeleteContext, DeleteContextType } from "../context/delete.context";
 
 type Props = {
