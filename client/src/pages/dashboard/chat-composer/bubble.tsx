@@ -1,7 +1,6 @@
 import ImageViewer from "../../../components/ui/image-viewer";
 import moment from "moment";
 import { Avatar } from "@material-tailwind/react";
-import { EmojiButton } from "@joeattardi/emoji-button";
 import DisplayReactions from "./display-reaction";
 import useBubble from "../../../hooks/chat-composer/useBubble";
 import { IMessageType } from "./types";
@@ -16,10 +15,6 @@ type Props = {
   msgReactions: [];
 };
 
-const picker = new EmojiButton({
-  categories: ["smileys", "flags"],
-}); // for emoji icons
-
 export default function Bubble(props: Props) {
   const { msg, imgSrcs, text, msgId, msgReactions } = props;
   const {
@@ -30,7 +25,7 @@ export default function Bubble(props: Props) {
     auth,
     messageContext,
     open,
-  } = useBubble({ msgId, msgReactions, picker });
+  } = useBubble({ msgId, msgReactions });
 
   return (
     <div

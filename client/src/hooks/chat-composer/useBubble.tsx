@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useCallback } from "react";
 import { useAuthUser } from "react-auth-kit";
 import { socket } from "../../pages/dashboard";
 import {
@@ -6,15 +6,19 @@ import {
   MessageContextType,
 } from "../../context/message.context";
 import { IReaction } from "../../pages/dashboard/chat-composer/types";
+import { EmojiButton } from "@joeattardi/emoji-button";
 
 interface IProps {
-  picker: any;
   msgReactions: any;
   msgId: any;
 }
 
+const picker = new EmojiButton({
+  categories: ["smileys", "flags"],
+}); // for emoji icons
+
 export default function useBubble(props: IProps) {
-  const { msgReactions, picker, msgId } = props;
+  const { msgReactions, msgId } = props;
   const messageContext = useContext<MessageContextType | null>(MessageContext);
   const auth = useAuthUser();
   const [reactions, setReactions] = useState<IReaction[]>(msgReactions);
@@ -31,11 +35,7 @@ export default function useBubble(props: IProps) {
   };
 
   // remove reaction from "reactions" state once the emoji was clicked
-  const removeReaction = (react: {
-    _id: string;
-    reaction: string;
-    reactor: string;
-  }) => {
+  const removeReaction = (react: IReaction) => {
     // return if the reactor is the caller, then just return
     if (react.reactor !== auth()?.id) return;
 
@@ -52,24 +52,27 @@ export default function useBubble(props: IProps) {
   };
 
   // emoji picker event handler
-  const handleEmojiSelection = (selection: { text: string; emoji: string }) => {
-    // check if the selected emoji was already exists in the array of reactions
-    const isEmojiExists = reactions.some(
-      (react: { reactor: string; reaction: string }) => {
-        react.reaction.includes(selection.emoji);
-      }
-    );
+  const handleEmojiSelection = useCallback(
+    (selection: { text: string; emoji: string }) => {
+      // check if the selected emoji was already exists in the array of reactions
+      const isEmojiExists = reactions.some(
+        (react: { reactor: string; reaction: string }) => {
+          react.reaction.includes(selection.emoji);
+        }
+      );
 
-    if (isEmojiExists) return; // return if reactions array already have the emoji selected
+      if (isEmojiExists) return; // return if reactions array already have the emoji selected
 
-    // TODO: add the reaction to the DB with an api/socket
-    setEmojiPickerEnabled(false); // set emoji picker enabled to false after emoji selection
-    socket.emit("message_react", {
-      docId: messageContext?.chatUser.msgDocId,
-      msgId,
-      reaction: { reaction: selection.emoji, reactor: auth()?.id },
-    });
-  };
+      // TODO: add the reaction to the DB with an api/socket
+      setEmojiPickerEnabled(false); // set emoji picker enabled to false after emoji selection
+      socket.emit("message_react", {
+        docId: messageContext?.chatUser.msgDocId,
+        msgId,
+        reaction: { reaction: selection.emoji, reactor: auth()?.id },
+      });
+    },
+    [emojiPickerEnabled, reactions]
+  );
 
   useEffect(() => {
     // TODO: listen to socket events for getting the reactions of a message
@@ -91,7 +94,7 @@ export default function useBubble(props: IProps) {
       socket.off("message_react");
       picker.off("emoji", handleEmojiSelection);
     };
-  }, [emojiPickerEnabled]);
+  }, [emojiPickerEnabled, handleEmojiSelection]);
 
   return {
     handleOpen,

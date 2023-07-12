@@ -204,7 +204,7 @@ module.exports.SocketGetMessages = (socket, io) => {
                 io.to(recipientSocketId).emit('notification', `New message received from ${user?.username}` ); // send the notification
 
                 // send an event listener with result value to the recipient socket
-                const reactions = data.messages[0].reactions; // get only the reactions
+                const reactions = data.messages.find(msg => msg.id === msgId).reactions; // get only the message reactions that was updated
                 io.to(recipientSocketId).emit('reactions', reactions);  // send the updated reactions to the recipient
                 socket.emit('reactions', reactions);  // send the updated reactions to the caller
             } catch (error) {
@@ -235,7 +235,7 @@ module.exports.SocketGetMessages = (socket, io) => {
                 const recipientSocketId = activeSockets.get(idWhereToSend.toString());
 
                 // send an event listener with result value to the recipient socket
-                const reactions = data.messages[0].reactions; // get only the reactions
+                const reactions = data.messages.find(msg => msg.id === msgId).reactions; // get only the message reactions that was updated
                 io.to(recipientSocketId).emit('reactions', reactions);  // send the updated reactions
                 socket.emit('reactions', reactions);  // send the updated reactions to the caller
             } catch (error) {
