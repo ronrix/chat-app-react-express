@@ -43,7 +43,7 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/create-group",
         Component: lazy(
-          () => import("./pages/dashboard/groupchat/create-group-chat")
+          () => import("./pages/dashboard/groupchat")
         ),
       },
       {
