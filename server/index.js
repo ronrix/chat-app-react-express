@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { user, chat } = require('./api');
+const { user, chat, groupChat } = require('./api');
 const { databaseConnection } = require('./database');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -25,6 +25,7 @@ const startServer = async () => {
     // apis
     user(app);
     chat(app);
+    groupChat(app)
 
     // start socket connection
     StartServerWithSocketIO(app);

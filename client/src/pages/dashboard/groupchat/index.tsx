@@ -1,5 +1,5 @@
 import useGroupChat from "../../../hooks/groupchat/useGroupChat";
-import GroupForm from "./group-form";
+import CreateGroupChatForm from "./create-group-chat-form";
 import Search from "./search";
 import SelectedUsers from "./selected-users";
 import UsersLists from "./users";
@@ -29,7 +29,10 @@ export default function CreateGroupChat() {
   return (
     <div className='p-5 mt-10 h-full relative'>
       <h2 className='mb-5 font-bold text-2xl'>Create Group Chat</h2>
-      <GroupForm />
+      <CreateGroupChatForm
+        selectedUsers={selectedUsers}
+        setSelectedUsers={setSelectedUsers}
+      />
       {selectedUsersComponent()}
       <Search users={users} setUsers={setUsers} originalUsers={originalUsers} />
       <UsersLists
