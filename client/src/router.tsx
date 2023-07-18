@@ -42,9 +42,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/dashboard/create-group",
-        Component: lazy(
-          () => import("./pages/dashboard/groupchat")
-        ),
+        Component: lazy(() => import("./pages/dashboard/groupchat")),
       },
       {
         path: "/dashboard/profile-settings",
@@ -54,8 +52,21 @@ export const router = createBrowserRouter([
         path: "/dashboard/inbox/:id",
         Component: lazy(() => import("./pages/dashboard/chat-composer")),
       },
+      {
+        path: "/dashboard/notifications",
+        Component: lazy(() => import("./pages/dashboard/notifications")),
+      },
+      {
+        path: "/dashboard/groups",
+        Component: lazy(() => import("./pages/dashboard/groups")),
+      },
+      {
+        path: "/dashboard/groups/:id",
+        Component: lazy(() => import("./pages/dashboard/chat-composer")),
+      },
     ],
   },
+
   {
     path: "/dashboard/send-message",
     Component: lazy(() => import("./pages/dashboard/new-composer")),

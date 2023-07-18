@@ -18,10 +18,20 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "../../utils/axios";
 import { useAuthUser, useSignOut } from "react-auth-kit";
-import { InboxIcon, UserGroupIcon } from "@heroicons/react/24/solid";
+import {
+  InboxIcon,
+  UserGroupIcon,
+  BellAlertIcon,
+  ListBulletIcon,
+} from "@heroicons/react/24/solid";
 
 // profile menu component
 const profileMenuItems = [
+  {
+    label: "Notifications",
+    path: "/dashboard/notifications",
+    icon: BellAlertIcon,
+  },
   {
     label: "Profile settings",
     path: "/dashboard/profile-settings",
@@ -30,6 +40,11 @@ const profileMenuItems = [
   {
     label: "List of users",
     path: "/dashboard/list-of-users",
+    icon: ListBulletIcon,
+  },
+  {
+    label: "Group Chats",
+    path: "/dashboard/groups",
     icon: UserGroupIcon,
   },
   {

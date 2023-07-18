@@ -3,6 +3,8 @@ import {
   PowerIcon,
   UserGroupIcon,
   Cog6ToothIcon,
+  BellAlertIcon,
+  ListBulletIcon,
 } from "@heroicons/react/24/solid";
 import {
   List,
@@ -10,12 +12,40 @@ import {
   ListItemPrefix,
   PopoverHandler,
 } from "@material-tailwind/react";
-import React from "react";
+import React, { createElement } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type Props = {
   handleLogout: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
+
+const sidebarMenus = [
+  {
+    path: "/dashboard/list-of-users",
+    label: "List of users",
+    icon: ListBulletIcon,
+  },
+  {
+    path: "/dashboard/notifications",
+    label: "Notifications",
+    icon: BellAlertIcon,
+  },
+  {
+    path: "/dashboard/groups",
+    label: "Group Chats",
+    icon: UserGroupIcon,
+  },
+  {
+    path: "/dashboard/inbox",
+    label: "Inbox",
+    icon: InboxIcon,
+  },
+  {
+    path: "/dashboard/profile-settings",
+    label: "Profile settings",
+    icon: Cog6ToothIcon,
+  },
+];
 
 export default function NavList(props: Props) {
   const location = useLocation();
@@ -25,43 +55,27 @@ export default function NavList(props: Props) {
   return (
     <List>
       <hr className='my-2 border-blue-gray-50' />
-      <ListItem
-        onClick={() => navigate("/dashboard/list-of-users")}
-        className={`${
-          location.pathname.split("/")[2] === "list-of-users"
-            ? "bg-gray-100"
-            : ""
-        }`}
-      >
-        <ListItemPrefix>
-          <UserGroupIcon className='h-5 w-5' />
-        </ListItemPrefix>
-        Lists of users
-      </ListItem>
-      <ListItem
-        onClick={() => navigate("/dashboard/inbox")}
-        className={`${
-          location.pathname.split("/")[2] === "inbox" ? "bg-gray-100" : ""
-        }`}
-      >
-        <ListItemPrefix>
-          <InboxIcon className='h-5 w-5' />
-        </ListItemPrefix>
-        Inbox
-      </ListItem>
-      <ListItem
-        onClick={() => navigate("/dashboard/profile-settings")}
-        className={`${
-          location.pathname.split("/")[2] === "profile-settings"
-            ? "bg-gray-100"
-            : ""
-        }`}
-      >
-        <ListItemPrefix>
-          <Cog6ToothIcon className='h-5 w-5' />
-        </ListItemPrefix>
-        Profile settings
-      </ListItem>
+      {sidebarMenus.map(({ path, label, icon }, i) => {
+        return (
+          <ListItem
+            key={i}
+            onClick={() => navigate(path)}
+            className={`${
+              location.pathname.split("/")[2] === path.split("/")[2]
+                ? "bg-gray-100"
+                : ""
+            }`}
+          >
+            <ListItemPrefix>
+              {createElement(icon, {
+                className: `h-4 w-4`,
+                strokeWidth: 2,
+              })}
+            </ListItemPrefix>
+            {label}
+          </ListItem>
+        );
+      })}
       <PopoverHandler onClick={handleLogout}>
         <ListItem>
           <ListItemPrefix>
