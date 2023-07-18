@@ -64,6 +64,26 @@ class GroupChatService {
             throw new Error(error);
         }
     }
+
+    // insert message reaction 
+    async InsertReactionOnMsg({ docId, msgId, reaction }) {
+        try {
+            const result = await this.group.InsertReaction({ docId, msgId, reaction });
+            return FormatData(result);
+        } catch (error) {
+            throw new Error(error) ;
+        }
+    }
+
+    // delete message reaction
+    async DeleteReactionOnMsg({ docId, msgId, reactionId }) {
+        try {
+            const result = await this.group.DeleteReaction({ docId, msgId, reactionId });
+            return FormatData(result);
+        } catch (error) {
+            throw new Error(error) ;
+        }
+    }
 }
 
 module.exports = GroupChatService;

@@ -128,6 +128,33 @@ class GroupChatModel {
             throw new Error(error.message);
         }
     }
+
+    // insert new reaction
+    async InsertReaction({docId, msgId, reaction}) {
+        try {
+            const result = await groupChatSchema.findOneAndUpdate(
+                { _id: docId, messages: { $elemMatch: { _id: msgId } } }, 
+                { $push: { 'messages.$.reactions': reaction } }, 
+                { new: true });
+            return result;
+        } catch (error) {
+            throw new Error(error.message) ;
+        }
+    }
+
+    // delete reaction emoji
+    async DeleteReaction({docId, msgId, reactionId}) {
+        try {
+            const result = await groupChatSchema.findOneAndUpdate(
+                { _id: docId, messages: { $elemMatch: { _id: msgId } } }, 
+                { $pull: { 'messages.$.reactions': { _id: reactionId } } }, 
+                { new: true });
+
+            return result;
+        } catch (error) {
+            throw new Error(error.message) ;
+        }
+    }
 }
 
 module.exports = GroupChatModel;

@@ -36,7 +36,7 @@ const App = () => {
             <Suspense
               fallback={
                 <div className='mx-auto flex items-center justify-center h-screen w-screen'>
-                  loading...
+                  Loading...
                 </div>
               }
             >

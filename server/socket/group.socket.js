@@ -116,4 +116,49 @@ module.exports.SocketGroupChat = (socket, io) => {
             }
         });
     });
+
+    // create message reaction event listner
+    socket.on('group_message_react', ({ docId, msgId, reaction, roomId }) => {
+        EventMiddleware(socket.request.token, async (error) => {
+            // handle error
+            if(error) {
+                socket.disconnect(); //disconnect the socket
+                return;
+            }
+
+            // execute logic
+            try {
+                const { data } = await groupChatService.InsertReactionOnMsg({ docId, msgId, reaction });
+
+                // send an event listener with result value to the recipient socket
+                const reactions = data.messages.find(msg => msg.id === msgId).reactions; // get only the message reactions that was updated
+                io.to(roomId).emit('reactions', reactions);  // send the updated reactions to the recipient
+                socket.emit('reactions', reactions);  // send the updated reactions to the caller
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    })
+
+    // delete message reaction event listner
+    socket.on('group_delete_react', ({ docId, msgId, reactionId, roomId }) => {
+        EventMiddleware(socket.request.token, async (error) => {
+            // handle error
+            if(error) {
+                socket.disconnect(); //disconnect the socket
+                return;
+            }
+
+            // execute logic
+            try {
+                const { data } = await groupChatService.DeleteReactionOnMsg({ docId, msgId, reactionId });
+
+                const reactions = data.messages.find(msg => msg.id === msgId).reactions; // get only the message reactions that was updated
+                io.to(roomId).emit('reactions', reactions);  // send the updated reactions
+                socket.emit('reactions', reactions);  // send the updated reactions to the caller
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    })
 }

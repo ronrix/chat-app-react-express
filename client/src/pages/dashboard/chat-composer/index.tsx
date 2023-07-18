@@ -13,7 +13,7 @@ export default function ChatComposer() {
     useComposer();
 
   return (
-    <main className='mt-8 flex-1 flex flex-col'>
+    <main className='flex flex-col h-screen'>
       <ComposeContainer msgs={msgs} loading={loading} />
 
       {/* composer */}

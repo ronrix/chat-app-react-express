@@ -44,6 +44,17 @@ export default function useBubble(props: IProps) {
     setReactions(() => [...reactions]); // set the new reactions in a state. this will re-render the componet to display the updated reactions
 
     // TODO: remove the reaction from the DB with an api/socket
+    // check if 'isGroupChat' or not
+    if (messageContext?.chatUser.isGroupChat) {
+      socket.emit("group_delete_react", {
+        docId: messageContext?.chatUser.msgDocId,
+        msgId,
+        reactionId: react._id,
+        roomId: messageContext.chatUser.roomId,
+      });
+      return;
+    }
+    // 'private message' socket reaction event
     socket.emit("delete_react", {
       docId: messageContext?.chatUser.msgDocId,
       msgId,
@@ -65,6 +76,17 @@ export default function useBubble(props: IProps) {
 
       // TODO: add the reaction to the DB with an api/socket
       setEmojiPickerEnabled(false); // set emoji picker enabled to false after emoji selection
+      // check if 'isGropuChat' or not
+      if (messageContext?.chatUser.isGroupChat) {
+        socket.emit("group_message_react", {
+          docId: messageContext?.chatUser.msgDocId,
+          msgId,
+          reaction: { reaction: selection.emoji, reactor: auth()?.id },
+          roomId: messageContext.chatUser.roomId,
+        });
+        return;
+      }
+      // 'private message' socket reaction event
       socket.emit("message_react", {
         docId: messageContext?.chatUser.msgDocId,
         msgId,
