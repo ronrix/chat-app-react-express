@@ -39,13 +39,24 @@ module.exports = (app) => {
         }
     });
 
-
     // decline request invitation
     app.put('/invitation/decline', [ValidateToken], async (req, res) => {
         try {
             const { _id } = req.user;
             const { docId, notifId } = req.body;
             const { data } = await groupChatService.DeclineRequest({ userId: _id, docId, notifId });
+            return res.json(data);
+        } catch (error) {
+            return res.status(500).json({ msg: error.message });
+        }
+    });
+
+    // decline request invitation
+    app.get('/groups/members-list', [ValidateToken], async (req, res) => {
+        try {
+            const { _id } = req.user;
+            const { docId } = req.query;
+            const { data } = await groupChatService.GetMembersList({ userId: _id, docId });
             return res.json(data);
         } catch (error) {
             return res.status(500).json({ msg: error.message });

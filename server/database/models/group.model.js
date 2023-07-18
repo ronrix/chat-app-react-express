@@ -155,6 +155,16 @@ class GroupChatModel {
             throw new Error(error.message) ;
         }
     }
+
+    // get members
+    async GetMembers({ userId, docId }) {
+        try {
+            const result = await groupChatSchema.findOne({ _id: docId, $or: [ { members: userId }, { host: userId}] }).populate('members');
+            return result?.members;
+        } catch (error) {
+            throw new Error(error.message) ;
+        }
+    }
 }
 
 module.exports = GroupChatModel;

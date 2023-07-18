@@ -31,13 +31,13 @@ export default function ComposeContainer(props: Props) {
   }, [chatboxRef, loading, msgs]);
 
   return (
-    <div className='h-full flex flex-col'>
+    <div className='flex-3 overflow-auto flex flex-col h-full'>
       <ComposerHeader />
 
       {/* body */}
       <section
         ref={chatboxRef}
-        className='flex-1 flex flex-col gap-5 mt-10 overflow-auto max-h-[600px]'
+        className='flex flex-col gap-5 overflow-auto h-full'
       >
         {loading ? (
           <Spinner className='mx-auto mt-10' />

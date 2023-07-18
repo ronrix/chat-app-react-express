@@ -8,6 +8,7 @@ import { useAuthUser } from "react-auth-kit";
 import { socket } from "..";
 import { Avatar, Badge, IconButton } from "@material-tailwind/react";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
+import GroupMenu from "./group-menu";
 
 export default function ComposerHeader() {
   const navigate = useNavigate();
@@ -25,28 +26,35 @@ export default function ComposerHeader() {
   };
 
   return (
-    <header className='flex items-center gap-3'>
-      <IconButton variant='text' onClick={disconnectSocket}>
-        <ChevronLeftIcon className='h-5 w-5 text-gray-500' />
-      </IconButton>
-      <Avatar
-        size='sm'
-        alt='avatar'
-        src={
-          messageContext?.chatUser.avatar
-            ? `${import.meta.env.VITE_BACKEND_URL}/${
-                messageContext?.chatUser.avatar
-              }`
-            : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
-        }
-        className='ring-4 ring-green-500/30 border border-green-500 shadow-xl shadow-green-900/20'
-      />
-      <span className='capitalize font-bold flex items-center gap-4'>
-        {messageContext?.chatUser.username}
-        <Badge
-          color={messageContext?.chatUser.isOnline ? "green" : "gray"}
-        ></Badge>
-      </span>
+    <header className='flex-1 flex items-center justify-between shadow'>
+      <div className='flex items-center gap-3'>
+        <IconButton variant='text' onClick={disconnectSocket}>
+          <ChevronLeftIcon className='h-5 w-5 text-gray-500' />
+        </IconButton>
+        <Avatar
+          size='sm'
+          alt='avatar'
+          src={
+            messageContext?.chatUser.avatar
+              ? `${import.meta.env.VITE_BACKEND_URL}/${
+                  messageContext?.chatUser.avatar
+                }`
+              : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+          }
+          className='ring-4 ring-green-500/30 border border-green-500 shadow-xl shadow-green-900/20'
+        />
+        <span className='capitalize font-bold flex items-center gap-4'>
+          {messageContext?.chatUser.username}
+          {!messageContext?.chatUser.isGroupChat ? (
+            <Badge
+              color={messageContext?.chatUser.isOnline ? "green" : "gray"}
+            ></Badge>
+          ) : null}
+        </span>
+      </div>
+
+      {/* show menu only to group chat */}
+      {messageContext?.chatUser.isGroupChat && <GroupMenu />}
     </header>
   );
 }
