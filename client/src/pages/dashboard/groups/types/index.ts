@@ -1,7 +1,7 @@
 export interface IGroupChat {
     _id: string;
     groupName: string;
-    messages: [];
+    messages: {msg: string; _id: string; reactions: []; isDeletedBy: []}[];
     groupAvatar: string;
     roomId: string;
     host: string;

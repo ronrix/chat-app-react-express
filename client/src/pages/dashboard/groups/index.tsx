@@ -15,11 +15,13 @@ export default function Groups() {
             <Spinner className='mx-auto mt-10' />
           ) : groupChats?.length ? (
             groupChats?.map((group: IGroupChat) => {
+              const lastMsg = group.messages[group.messages.length - 1];
               return (
                 <GroupChat
                   key={group._id}
+                  groupChatId={group._id}
                   avatar={group.groupAvatar}
-                  currentMessage='hello'
+                  currentMessage={lastMsg.msg}
                   groupName={group.groupName}
                   roomId={group.roomId}
                 />

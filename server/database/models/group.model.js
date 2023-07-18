@@ -1,4 +1,5 @@
 const groupChatSchema = require('../schemas/group.schema');
+const userSchema = require('../schemas/user.schema');
 const requestNotification = require('../schemas/notification.schema');
 
 class GroupChatModel {
@@ -44,6 +45,16 @@ class GroupChatModel {
         }
     }
 
+    // find one by roomId
+    async GetByRoomId(roomId, userId) {
+        try {
+            const result = await groupChatSchema.findOne({ roomId, $or: [{ members: userId }, { host: userId }] });
+            return result
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
     // accepting request invitation (group chat)
     async Accept({ userId, docId, notifId }) {
         try {
@@ -59,6 +70,10 @@ class GroupChatModel {
             if(!exists) { // if not 'userId' does not exists, update the schema
                 await groupChatSchema.updateOne({ _id: docId }, { $push: { members: userId } });
                 await groupChatSchema.updateOne({ _id: docId }, { $pull: { pendingInvites: userId } });
+
+                // get the user and add '{user} join the group' message to the gropu chat
+                const user = await userSchema.findOne({ _id: userId });
+                await groupChatSchema.updateOne({ _id: docId }, { $push: { messages: { msg: `${user.username} joined the group` } } });
             }
             return result;
         } catch (error) {

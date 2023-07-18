@@ -50,6 +50,7 @@ export default function useChat(props: Props) {
       roomId,
       avatar,
       msgDocId: messageId,
+      isGroupChat: false,
     });
   };
 

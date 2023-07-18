@@ -8,6 +8,7 @@ import { socket } from "../../pages/dashboard";
 import axios from "../../utils/axios";
 import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
+import { useLocation } from "react-router-dom";
 
 export default function useComposer() {
   const [msgs, setMsgs] = useState<[]>([]);
@@ -15,10 +16,12 @@ export default function useComposer() {
   const messageContext = useContext<MessageContextType | null>(MessageContext);
   const [files, setFiles] = useState<File[]>([]);
   const quillRef = useRef<ReactQuill>(null);
+  const location = useLocation();
 
   const [composedMsg, setComposedMsg] = useState<string>("");
   const auth = useAuthUser();
 
+  // TODO: add group chat messages, this is just a copy of chat messages
   const handleSubmitNewMsg = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // prevent form default functionality
 
@@ -29,7 +32,7 @@ export default function useComposer() {
     // send small chunk of data
     if (composedMsg.length < 1875) {
       // emit event to send the message
-      socket.emit("send_msg", {
+      socket.emit("group_send_msg", {
         roomId: messageContext?.chatUser.roomId,
         msg: composedMsg,
         userId: auth()?.id,
@@ -55,7 +58,7 @@ export default function useComposer() {
         'src="img_src"'
       );
       await axios.post(
-        "/message/create",
+        "/groups/send-msg",
         {
           roomId: messageContext?.chatUser.roomId,
           msg: newComposedString,
@@ -89,7 +92,8 @@ export default function useComposer() {
     return;
   };
 
-  useEffect(() => {
+  // events and data for 'PM'
+  const singleMessage = () => {
     // emit event to get the messages by passing the roomId
     socket.emit("get_all_msgs", messageContext?.chatUser.roomId);
 
@@ -100,6 +104,27 @@ export default function useComposer() {
         setLoading(false);
       }
     });
+  };
+
+  const groupMessages = () => {
+    // emit event to get the messages by passing the roomId
+    socket.emit("group_messages", messageContext?.chatUser.roomId);
+
+    // listen for the event to store the response "messages" and display to the DOM
+    socket.on("group_messages", ({ data }) => {
+      if (data) {
+        setMsgs(data);
+        setLoading(false);
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (location.pathname.split("/")[2] === "inbox") {
+      singleMessage();
+    } else {
+      groupMessages();
+    }
 
     // image handler for react quill
     // this is a reference to the ReactQuill component handling image event

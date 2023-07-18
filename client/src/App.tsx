@@ -21,6 +21,7 @@ const App = () => {
     isOnline: false,
     avatar: "",
     msgDocId: "",
+    isGroupChat: false,
   });
   return (
     <ThemeProvider>

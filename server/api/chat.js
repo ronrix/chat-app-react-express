@@ -13,7 +13,7 @@ module.exports = (app) => {
             const messages = await message.GetMessages(roomId);
             return res.status(200).json(messages);
         } catch (error) {
-            return res.status(400).json({msg: error.message});
+            return res.status(500).json({msg: error.message});
         }
     });
 
@@ -50,7 +50,7 @@ module.exports = (app) => {
             const result = await message.NewCreate({ roomId, msg, userId, email });
             return res.status(201).json(result);
         } catch (error) {
-            return res.status(400).json({msg: error.message});
+            return res.status(500).json({msg: error.message});
         }
     })
 
@@ -62,7 +62,7 @@ module.exports = (app) => {
             const result = await message.DeleteMsg({ messageId, userId: _id });
             return res.json(result); // send 204 code "update/delete successfully"
         } catch (error) {
-            return res.status(400).json({msg: error.message});
+            return res.status(500).json({msg: error.message});
         }
     })
 

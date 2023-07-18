@@ -52,15 +52,24 @@ export default function ComposeContainer(props: Props) {
             );
 
             const text = msg.msg.replace(imgRegex, ""); // replace <img /> with empty string to exclude it from the message text
+            if (msg?.sender) {
+              return (
+                <Bubble
+                  key={i}
+                  text={text}
+                  msg={msg}
+                  imgSrcs={imgSrcs}
+                  msgId={msg._id}
+                  msgReactions={msg.reactions}
+                />
+              );
+            }
+
+            // for group chat. 'user joined the room'
             return (
-              <Bubble
-                key={i}
-                text={text}
-                msg={msg}
-                imgSrcs={imgSrcs}
-                msgId={msg._id}
-                msgReactions={msg.reactions}
-              />
+              <div key={i} className='text-sm text-gray-400 mx-auto'>
+                {msg.msg}
+              </div>
             );
           })
         ) : (

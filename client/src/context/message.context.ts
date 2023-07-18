@@ -7,6 +7,7 @@ export type MessageContextStateType = {
         isOnline: boolean;
         avatar: string;
         msgDocId: string;
+        isGroupChat: boolean;
 }
 
 export type MessageContextType = {

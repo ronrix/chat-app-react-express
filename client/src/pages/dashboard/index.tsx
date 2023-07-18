@@ -33,7 +33,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     // if user is authenticated then redirect them to '/inbox' to view the contact lists
-    if (isAuthenticated() && location.pathname.split("/")[2] === "") {
+    if (isAuthenticated() && !location.pathname.split("/")[2]) {
       navigate("/dashboard/inbox");
     }
     // check if avatar is does not exists

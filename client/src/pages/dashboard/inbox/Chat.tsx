@@ -38,7 +38,7 @@ export default function Chats(props: Props) {
   return (
     <ListItem>
       <Link
-        to={`/dashboard/inbox/${roomId}}`}
+        to={`/dashboard/inbox/${roomId}`}
         onClick={handleSettingActiveMsg}
         className='flex-1 flex m-0 p-0'
       >
