@@ -6,6 +6,7 @@ const { SocketGetMessages } = require("./message.socket");
 const jwt = require('jsonwebtoken');
 const { activeSockets, usersWhoJoinedRoom } = require("./activeSockets");
 const { SocketGroupChat } = require("./group.socket");
+const { SocketNofification } = require("./notification.socket");
 
 module.exports.StartServerWithSocketIO = (app) => {
     const server = http.createServer(app);
@@ -63,6 +64,7 @@ module.exports.StartServerWithSocketIO = (app) => {
         SocketGetContacts(socket, io);
         SocketGetMessages(socket, io);
         SocketGroupChat(socket, io);
+        SocketNofification(socket, io);
 
         // disconnect the user from the room
         socket.on('disconnect_from_the_room', ({userId, roomId}) => {

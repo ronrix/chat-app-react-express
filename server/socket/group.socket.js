@@ -14,11 +14,13 @@ module.exports.SocketGroupChat = (socket, io) => {
             // execute function...
             try {
                 // loop through members to send each one a notification
-                members.forEach(member => {
+                members?.forEach(member => {
                     // Emit a notification event to the specific room
                     // Get the recipient's socket ID from connectedUsers map
                     const recipientSocketId = activeSockets.get(member);
-                    io.to(recipientSocketId).emit('notification', `${hostname[0].toUppercase() + hostname.slice(1)} send you a request to join ${name} Group Chat`);  // send the updated reactions
+                    if(recipientSocketId) {
+                        io.to(recipientSocketId).emit('notification', `${hostname[0].toUpperCase() + hostname.slice(1)} send you a request to join ${name} Group Chat`);  // send the updated reactions
+                    }
                 });
             } catch (error) {
                 console.log(error);

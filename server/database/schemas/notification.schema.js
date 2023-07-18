@@ -10,13 +10,14 @@ const Schema = mongoose.Schema;
 const RequestNotification = new Schema({
     notifications: [
         {
+            groupChatDocId: Schema.Types.ObjectId,
             inviter: { type: Schema.Types.ObjectId, ref: 'user' }, // group chat creator
             requestName: Schema.Types.String,
+            action: Schema.Types.Boolean, // false => 'declined', true => 'accepted', null | undefined => 'no action yet' - display action btns
             createdAt: Schema.Types.Date,
         }
     ],
     user: { type: Schema.Types.ObjectId, ref: 'user' }, // id of the recipient
-    action: Schema.Types.Boolean, // 0 => 'declined', 1 => 'accepted', null => 'no action yet' - display action btns
 }, { timestamps: true });
 
 module.exports = mongoose.model('requestNotification', RequestNotification);

@@ -11,7 +11,7 @@ const GroupChatSchema = new Schema({
     groupName: String,
     members: [ { type: Schema.Types.ObjectId, ref: 'user', default: [] } ], // will store users that accepted the request to join the group chat
     pendingInvites: [ {type: Schema.Types.ObjectId, ref: 'user' }], // will store userId's of the invited users
-    groupAvatar: { type: Schema.Types.String, default: 'uploads/default-group-chat-avatar' },
+    groupAvatar: { type: Schema.Types.String, default: 'uploads/default-group-chat-avatar.png' },
     messages: [
         {
             msg: Schema.Types.String,
