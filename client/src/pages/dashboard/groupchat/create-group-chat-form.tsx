@@ -4,6 +4,7 @@ import { User } from "./types";
 import axios from "../../../utils/axios";
 import { uid } from "uid";
 import { socket } from "..";
+import { toast } from "react-toastify";
 import { useAuthUser } from "react-auth-kit";
 
 type Props = {
@@ -34,6 +35,10 @@ export default function CreateGroupChatForm(props: Props) {
     // reset form state
     setSelectedUsers([]);
     setGroupChatName("");
+    // display message
+    toast.success(
+      "You created a group chat! Sending invitation to the selected users"
+    );
   };
 
   return (

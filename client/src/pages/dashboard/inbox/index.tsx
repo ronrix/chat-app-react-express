@@ -1,4 +1,4 @@
-import Chat from "./Chat";
+import Chat from "./chat";
 import { List, Card, Spinner } from "@material-tailwind/react";
 import ErrorMessage from "../../../components/errors/error-messages";
 import CreateNewBubble from "./create-new-bubble";

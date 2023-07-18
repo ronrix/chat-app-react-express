@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Sidebar from "../../components/ui/sidebar";
 import { ToastContainer } from "react-toastify";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "../../components/ui/header";
 
 // socket
@@ -25,6 +25,7 @@ export default function Dashboard() {
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
   const auth = useAuthUser();
+  const location = useLocation();
 
   // connection error
   const signOut = useSignOut();
@@ -32,7 +33,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     // if user is authenticated then redirect them to '/inbox' to view the contact lists
-    if (isAuthenticated()) {
+    if (isAuthenticated() && location.pathname.split("/")[2] === "") {
       navigate("/dashboard/inbox");
     }
     // check if avatar is does not exists
