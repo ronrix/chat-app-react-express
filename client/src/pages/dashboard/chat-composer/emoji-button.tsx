@@ -13,7 +13,9 @@ export default function EmojiBtn(props: Props) {
   return (
     <div
       className={`absolute top-4 p-1 bg-white h-6 w-6 flex items-center justify-center rounded-full cursor-pointer ${
-        msg.sender == auth()?.id ? "-left-5" : "-right-5"
+        msg.sender == auth()?.id || msg.sender._id == auth()?.id
+          ? "-left-5"
+          : "-right-5"
       }`}
       onClick={toggleEmojiPicker}
     >

@@ -9,14 +9,8 @@ import "react-quill/dist/quill.snow.css";
 import useComposer from "../../../hooks/chat-composer/useComposer";
 
 export default function ChatComposer() {
-  const {
-    msgs,
-    loading,
-    quillRef,
-    handleSubmitNewMsg,
-    setComposedMsg,
-    composedMsg,
-  } = useComposer();
+  const { msgs, loading, quillRef, onSubmit, setComposedMsg, composedMsg } =
+    useComposer();
 
   return (
     <main className='mt-8 flex-1 flex flex-col'>
@@ -24,7 +18,7 @@ export default function ChatComposer() {
 
       {/* composer */}
       <div className='rounded-xl relative border w-full'>
-        <form onSubmit={handleSubmitNewMsg}>
+        <form onSubmit={onSubmit}>
           <ReactQuill
             ref={quillRef}
             theme='snow'

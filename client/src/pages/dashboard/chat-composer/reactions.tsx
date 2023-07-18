@@ -15,10 +15,12 @@ export default function Reactions(props: Props) {
   return (
     <div
       className={`absolute -bottom-5 p-1 rounded-full flex items-center ${
-        msg.sender == auth()?.id ? "right-12" : "left-12"
+        msg.sender == auth()?.id || msg.sender._id == auth()?.id
+          ? "right-12"
+          : "left-12"
       }`}
     >
-      {reactions.length ? (
+      {reactions?.length ? (
         <>
           {reactions?.slice(0, 3).map((react: IReaction) => (
             <span

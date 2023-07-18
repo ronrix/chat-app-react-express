@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSignOut } from "react-auth-kit";
-import axios from "../../utils/axios";
 import { IGroupChat } from "../../pages/dashboard/groups/types";
+import { socket } from "../../pages/dashboard";
 
 export default function useGetGroups() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -10,9 +10,11 @@ export default function useGetGroups() {
 
   const getAllGroupChats = async () => {
     try {
-      const { data } = await axios.get("/groups/all");
-      setLoading(false);
-      setGroupChats(data);
+      socket.emit("group_chats");
+      socket.on("group_chats", (data) => {
+        setLoading(false);
+        setGroupChats(data);
+      });
     } catch (error: any) {
       if (error.response.status === 403) {
         // means the token has expired

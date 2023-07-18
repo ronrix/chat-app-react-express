@@ -3,6 +3,17 @@ const userSchema = require('../schemas/user.schema');
 const requestNotification = require('../schemas/notification.schema');
 
 class GroupChatModel {
+
+    // insert new message
+    async Insert({roomId, msg, userId}) {
+        try {
+            const result = await groupChatSchema.updateOne({ roomId }, { $push: { messages: { msg, sender: userId } }});
+            return result;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
     async CreateNewGroupChat({ roomId, members, name, userId }) {
         try {
             const data = {
@@ -46,10 +57,29 @@ class GroupChatModel {
     }
 
     // find one by roomId
-    async GetByRoomId(roomId, userId) {
+    async GetMessagesByRoomId(roomId, userId) {
         try {
-            const result = await groupChatSchema.findOne({ roomId, $or: [{ members: userId }, { host: userId }] });
-            return result
+            const results = await groupChatSchema.findOne({ roomId, $or: [{ members: userId }, { host: userId }] }).populate('messages.sender');
+
+            // filter results excluding messages that has "isDeletedBy" value of "userId"
+            const formattedResults = results.messages.filter(msg => {
+                // check if isDeletedBy exists. if not just return msg
+                // if is exists then only return the messages that are not deleted
+                if(msg?.isDeletedBy) {
+                    // check if isDeletedBy does not contains value of "userId" then return the value
+                    // else don't return any value
+                    const isDeletedBy =  msg?.isDeletedBy.map(a => String(a)); // convert ObjectId to String to use "includes" array function
+                    if(!isDeletedBy.includes(userId)) { 
+                        return msg;
+                    }
+                }
+                else {
+                    return msg;
+                }
+            });
+
+            // return in an array-object format with "messages" property
+            return { messages: formattedResults };
         } catch (error) {
             throw new Error(error.message);
         }

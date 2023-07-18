@@ -30,7 +30,9 @@ export default function Bubble(props: Props) {
   return (
     <div
       className={`w-fit tracking-wider flex items-center gap-3 relative ${
-        msg.sender == auth()?.id ? "self-end" : "self-start"
+        msg.sender == auth()?.id || msg.sender._id == auth()?.id
+          ? "self-end"
+          : "self-start"
       }`}
     >
       {/* display emoji reactions */}
@@ -49,13 +51,21 @@ export default function Bubble(props: Props) {
       <EmojiBtn msg={msg} toggleEmojiPicker={toggleEmojiPicker} />
 
       {/* message content */}
-      <div className={`${msg.sender === auth()?.id ? "order-1" : "order-2"}`}>
+      <div
+        className={`${
+          msg.sender === auth()?.id || msg.sender._id == auth()?.id
+            ? "order-1"
+            : "order-2"
+        }`}
+      >
         <span className='text-[12px] text-gray-300'>
           {moment(msg.createdAt).startOf("hour").fromNow()}
         </span>
         <div
           className={`font-poppins p-2 shadow rounded-md ${
-            msg.sender === auth()?.id ? "bg-blue-300" : ""
+            msg.sender === auth()?.id || msg.sender._id == auth()?.id
+              ? "bg-blue-300"
+              : ""
           }`}
         >
           <span dangerouslySetInnerHTML={{ __html: text }}></span>
@@ -66,21 +76,35 @@ export default function Bubble(props: Props) {
       </div>
 
       {/* sender avatar */}
-      <Avatar
-        size='sm'
-        alt='avatar'
-        src={
-          msg.sender === auth()?.id
-            ? `${import.meta.env.VITE_BACKEND_URL}/${auth()?.avatar}`
-            : messageContext?.chatUser.avatar
-            ? `${import.meta.env.VITE_BACKEND_URL}/${
-                messageContext?.chatUser.avatar
-              }`
-            : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
-        }
-        className={`ring-4 ring-green-500/30 border border-green-500 shadow-xl shadow-green-900/20
+      {!messageContext?.chatUser.isGroupChat ? (
+        <Avatar
+          size='sm'
+          alt='avatar'
+          src={
+            msg.sender === auth()?.id
+              ? `${import.meta.env.VITE_BACKEND_URL}/${auth()?.avatar}`
+              : messageContext?.chatUser.avatar
+              ? `${import.meta.env.VITE_BACKEND_URL}/${
+                  messageContext?.chatUser.avatar
+                }`
+              : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+          }
+          className={`ring-4 ring-green-500/30 border border-green-500 shadow-xl shadow-green-900/20
                   ${msg.sender === auth()?.id ? "order-2" : "order-1"}`}
-      />
+        />
+      ) : (
+        <Avatar
+          size='sm'
+          alt='avatar'
+          src={
+            msg.sender?.avatar
+              ? `${import.meta.env.VITE_BACKEND_URL}/${msg.sender?.avatar}`
+              : "https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+          }
+          className={`ring-4 ring-green-500/30 border border-green-500 shadow-xl shadow-green-900/20
+                  ${msg.sender === auth()?.id ? "order-2" : "order-1"}`}
+        />
+      )}
     </div>
   );
 }

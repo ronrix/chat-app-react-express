@@ -23,15 +23,12 @@ type Props = {
 
 export default function GroupChat(props: Props) {
   const { roomId, avatar, groupName, currentMessage, groupChatId } = props;
-  const auth = useAuthUser();
   const messageContext = useContext<MessageContextType | null>(MessageContext);
 
   // function to emit joining room event with userId
   // it will store the userId and the socket id to the servers state to use for notifications
   const handleJoinRoom = () => {
-    const id = 1;
-    socket.emit("join_room", { roomId, id }); // join the user to the room provided
-    socket.emit("store_user_to_room", { userId: auth()?.id, roomId }); // emit event to store the user to the server state
+    socket.emit("group_join_room", roomId); // join the user to the room provided
 
     // set the new message context containing messageId, roomId, and, user information of the recipient
     messageContext?.setChatUser({
@@ -47,7 +44,7 @@ export default function GroupChat(props: Props) {
   return (
     <ListItem>
       <Link
-        to={`/dashboard/groups/${roomId}}`}
+        to={`/dashboard/groups/${roomId}`}
         className='flex-1 flex m-0 p-0'
         onClick={handleJoinRoom}
       >

@@ -6,6 +6,16 @@ class GroupChatService {
         this.group = new GroupChatModel();
     }
 
+    // insert new message service
+    async InsertMessage({roomId, msg, userId}) {
+        try {
+            const result = await this.group.Insert({roomId, msg, userId});
+            return FormatData(result);
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
     async CreateGroupChat({ name, members, roomId, userId }) {
         try {
             const result = await this.group.CreateNewGroupChat({name, members, roomId, userId });
@@ -46,9 +56,9 @@ class GroupChatService {
     }
 
     // get messages by room id
-    async GetAllByRoomId(roomId, userId) {
+    async GetMessagesByRoomId(roomId, userId) {
         try {
-            const result = await this.group.GetByRoomId(roomId, userId);
+            const result = await this.group.GetMessagesByRoomId(roomId, userId);
             return FormatData(result);
         } catch (error) {
             throw new Error(error);

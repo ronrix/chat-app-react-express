@@ -21,10 +21,8 @@ export default function useComposer() {
   const [composedMsg, setComposedMsg] = useState<string>("");
   const auth = useAuthUser();
 
-  // TODO: add group chat messages, this is just a copy of chat messages
-  const handleSubmitNewMsg = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // prevent form default functionality
-
+  // handle form for "groupchat" messages
+  const handleSubmitGroupChat = async () => {
     // if composeMsg has images inside of it, we expected that the size of that won't be send through
     // sockets. so to overcome that limitation we can send it axios and emit a sockets that calls for the
     // update of the messages
@@ -36,8 +34,7 @@ export default function useComposer() {
         roomId: messageContext?.chatUser.roomId,
         msg: composedMsg,
         userId: auth()?.id,
-        idWhereToSend: messageContext?.chatUser.id,
-        username: auth()?.email,
+        groupName: messageContext?.chatUser.username,
       });
 
       // reset field
@@ -75,6 +72,75 @@ export default function useComposer() {
       );
 
       // emit a socket event to update the msgs state
+      socket.emit("group_messages", {
+        roomId: messageContext?.chatUser.roomId,
+        userId: auth()?.id,
+        idWhereToSend: messageContext?.chatUser.id,
+        username: auth()?.email,
+      });
+
+      // reset field
+      setComposedMsg("");
+      setFiles([]);
+    } catch (error: any) {
+      // display error message
+      toast.error(error?.response?.data?.msg);
+    }
+    return;
+  };
+
+  // form submit for "PM" messages
+  const handleSubmitNewMsg = async () => {
+    // if composeMsg has images inside of it, we expected that the size of that won't be send through
+    // sockets. so to overcome that limitation we can send it axios and emit a sockets that calls for the
+    // update of the messages
+
+    // send small chunk of data
+    if (composedMsg.length < 1875) {
+      // emit event to send the message
+      socket.emit("send_msg", {
+        roomId: messageContext?.chatUser.roomId,
+        msg: composedMsg,
+        userId: auth()?.id,
+        idWhereToSend: messageContext?.chatUser.id,
+        username: auth()?.email,
+      });
+
+      // reset field
+      setComposedMsg("");
+      return;
+    }
+
+    try {
+      // else we can send now through api
+
+      /*
+        replace the img src with "img_src". 
+        that placeholder will be used inside the backend logic and will get replaced 
+        with real image link
+      */
+      const newComposedString = composedMsg.replace(
+        /src="([^"]+)"/g,
+        'src="img_src"'
+      );
+      await axios.post(
+        "/message/create",
+        {
+          roomId: messageContext?.chatUser.roomId,
+          msg: newComposedString,
+          userId: auth()?.id,
+          files: files,
+          idWhereToSend: messageContext?.chatUser.id,
+          username: auth()?.email,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      // emit a socket event to update the msgs state
       socket.emit("get_msgs_update", {
         roomId: messageContext?.chatUser.roomId,
         userId: auth()?.id,
@@ -90,6 +156,19 @@ export default function useComposer() {
       toast.error(error?.response?.data?.msg);
     }
     return;
+  };
+
+  // handle form submission of the composer component
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // prevent form default functionality
+
+    // use the form function if the component is from 'inbox'
+    if (location.pathname.split("/")[2] === "inbox") {
+      handleSubmitNewMsg();
+      return;
+    }
+    // else use the group chat form function
+    handleSubmitGroupChat();
   };
 
   // events and data for 'PM'
@@ -182,7 +261,7 @@ export default function useComposer() {
     loading,
     msgs,
     quillRef,
-    handleSubmitNewMsg,
+    onSubmit,
     setComposedMsg,
     composedMsg,
   };
