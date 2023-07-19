@@ -1,5 +1,6 @@
 const { NotificationService } = require('../services');
 const { EventMiddleware } = require('../utils/event.middleware');
+const { activeSockets } = require('./activeSockets');
 
 module.exports.SocketNofification = (socket, io) => {
     const notificationService = new NotificationService();
@@ -16,7 +17,12 @@ module.exports.SocketNofification = (socket, io) => {
             // execute function get the notifications of the user...
             try {
                 const { data } = await notificationService.GetNotifications(userId);
-                socket.emit('notifications', data);
+
+                // send data to sockets 'userId'
+                const recipientSocketId = activeSockets.get(userId);
+                if(recipientSocketId) {
+                    io.to(recipientSocketId).emit('notifications', data);
+                }
             } catch (error) {
                 socket.emit('notifications', []); // send empty data
             }

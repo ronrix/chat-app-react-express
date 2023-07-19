@@ -30,6 +30,7 @@ export default function Invites() {
     handleSubmitInvites,
     handleChangeSelect,
     promiseOptions,
+    selectRef,
   } = useInvitesForm();
 
   return (
@@ -40,6 +41,7 @@ export default function Invites() {
       ) : (
         <form onSubmit={handleSubmitInvites}>
           <AsyncSelect
+            ref={selectRef}
             cacheOptions={true}
             onChange={handleChangeSelect}
             components={{ Option: Component }}

@@ -3,4 +3,5 @@ module.exports = {
     ContactSchema: require('./schemas/contacts.schema'),
     UserSchema: require('./schemas/user.schema'),
     MessageSchema: require('./schemas/messages.schema'),
+    NotificationSchema: require('./schemas/notification.schema'),
 }

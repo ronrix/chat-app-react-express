@@ -4,6 +4,7 @@ import ErrorMessage from "../../../components/errors/error-messages";
 import Bubble from "./bubble";
 import { IMessageType } from "./types";
 import ComposerHeader from "./composer-header";
+import { useAuthUser } from "react-auth-kit";
 
 type Props = {
   msgs: [];
@@ -22,6 +23,7 @@ function extractSrcFromImgTag(imgTag: string) {
 export default function ComposeContainer(props: Props) {
   const { msgs, loading } = props;
   const chatboxRef = useRef<HTMLElement>(null);
+  const auth = useAuthUser();
 
   useEffect(() => {
     // scroll chat box to the bottom
@@ -65,10 +67,12 @@ export default function ComposeContainer(props: Props) {
               );
             }
 
-            // for group chat. 'user joined the room'
+            // for group chat. 'user joined the room' and 'user leave the group'
             return (
               <div key={i} className='text-sm text-gray-400 mx-auto'>
-                {msg.msg}
+                {msg.msg.includes(auth()?.username)
+                  ? msg.msg.replace(auth()?.username, "You")
+                  : msg.msg[0].toUpperCase() + msg.msg.slice(1)}
               </div>
             );
           })

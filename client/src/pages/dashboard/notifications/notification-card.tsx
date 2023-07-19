@@ -1,6 +1,7 @@
 import { Avatar, Button, ListItem, Typography } from "@material-tailwind/react";
 import { Notification, Notifications } from "./types";
 import useInvitationAction from "../../../hooks/notifications/useInvitationAction";
+import moment from "moment";
 
 type Props = {
   notif: Notification;
@@ -21,6 +22,9 @@ export default function NotificationCard(props: Props) {
       key={notif._id}
       className='flex flex-col justify-center items-start gap-2'
     >
+      <span className='text-[11px] text-gray-400'>
+        {moment(notif.createdAt).startOf("hour").fromNow()}
+      </span>
       <div>
         <Typography
           variant='h6'

@@ -1,9 +1,11 @@
 const GroupChatService = require('../services/group.service');
+const UserService = require('../services/user.service');
 const { EventMiddleware } = require('../utils/event.middleware');
 const { activeSockets } = require('./activeSockets');
 
 module.exports.SocketGroupChat = (socket, io) => {
     const groupChatService = new GroupChatService();
+    const userService  = new UserService();
 
     // group join room
     socket.on('group_join_room', (roomId) => {
@@ -60,6 +62,28 @@ module.exports.SocketGroupChat = (socket, io) => {
                 try {
                     const result = await groupChatService.GetMessagesByRoomId(roomId, socket.request.user._id); 
                     socket.emit('group_messages', {data: result.data.messages}); // send an event listener with result value
+                } catch (error) {
+                    socket.emit('group_messages', []); // send an event listener with wth no result
+                }
+            }
+            socket.emit('group_messages', []); // send an event listener with wth no result
+        });
+    });
+    
+    // update messages event, this event gets triggered when user accepts the invitation to join group chat
+    socket.on('update_group_messages', (docId) => {
+        EventMiddleware(socket.request.token, async (error) => {
+            // handle error
+            if(error) {
+                socket.disconnect(); //disconnect the socket
+                return;
+            }
+
+            // execute...
+            if(docId) {
+                try {
+                    const result = await groupChatService.GetMessagesByDocId(docId, socket.request.user._id); 
+                    io.to(result.data.roomId).emit('group_messages', {data: result.data.messages}); // send an event listener with result value
                 } catch (error) {
                     socket.emit('group_messages', []); // send an event listener with wth no result
                 }
@@ -156,6 +180,29 @@ module.exports.SocketGroupChat = (socket, io) => {
                 const reactions = data.messages.find(msg => msg.id === msgId).reactions; // get only the message reactions that was updated
                 io.to(roomId).emit('reactions', reactions);  // send the updated reactions
                 socket.emit('reactions', reactions);  // send the updated reactions to the caller
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    })
+
+    // leave group chat
+    socket.on('leave_group', (roomId) => {
+        EventMiddleware(socket.request.token, async (error) => {
+            // handle error
+            if(error) {
+                socket.disconnect(); //disconnect the socket
+                return;
+            }
+
+            // execute logic
+            try {
+                const { data } = await groupChatService.LeaveGroupChat({ roomId, userId: socket.request.user._id });
+                io.to(roomId).emit('group_messages', { data:  data.messages}); // send the new message
+
+                // send notification to all members
+                const user = await userService.GetUser(socket.request.user._id);
+                io.to(roomId).emit('notification', `${user.username} left the group`);  // send the updated reactions to the caller
             } catch (error) {
                 console.log(error);
             }

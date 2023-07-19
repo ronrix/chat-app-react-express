@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
 import {
   Menu,
@@ -8,6 +8,12 @@ import {
   IconButton,
 } from "@material-tailwind/react";
 import MenuDialog from "./modals/menu-dialog";
+import {
+  MessageContext,
+  MessageContextType,
+} from "../../../context/message.context";
+import { socket } from "..";
+import { useNavigate } from "react-router-dom";
 
 const menus = [
   {
@@ -36,7 +42,29 @@ const menus = [
 export default function GroupMenu() {
   const [open, setOpen] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
+  const messageContext = useContext<MessageContextType | null>(MessageContext);
+  const navigate = useNavigate();
+
+  const leaveGroupChat = async () => {
+    try {
+      // emit event to get the messages by passing the roomId
+      socket.emit("leave_group", messageContext?.chatUser.roomId);
+
+      // go out from the groupchat
+      navigate(-1);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleOpen = (role: string) => {
+    if (role === "leave") {
+      leaveGroupChat();
+
+      // emit event to update the messages to all group chat members
+      socket.emit("update_group_messages", messageContext?.chatUser.roomId);
+      return;
+    }
     setOpen(!open);
     setRole(role);
   };

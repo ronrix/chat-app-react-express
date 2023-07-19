@@ -65,6 +65,16 @@ class GroupChatService {
         }
     }
 
+    // get messages by doc id
+    async GetMessagesByDocId(docId, userId) {
+        try {
+            const result = await this.group.GetMessagesByDocId(docId, userId);
+            return FormatData(result);
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
     // insert message reaction 
     async InsertReactionOnMsg({ docId, msgId, reaction }) {
         try {
@@ -102,6 +112,16 @@ class GroupChatService {
             return FormatData(result);
         } catch (error) {
             throw new Error(error) ;
+        }
+    }
+
+    // leave group chat
+    async LeaveGroupChat({ userId, roomId }) {
+        try {
+            const result = await this.group.Leave({ userId, roomId });
+            return FormatData(result);
+        } catch (error) {
+            throw new Error(error);
         }
     }
 }

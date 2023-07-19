@@ -7,7 +7,7 @@ class GroupChatModel {
     // insert new message
     async Insert({roomId, msg, userId}) {
         try {
-            const result = await groupChatSchema.updateOne({ roomId }, { $push: { messages: { msg, sender: userId } }});
+            const result = await groupChatSchema.updateOne({ roomId }, { $push: { messages: { msg, sender: userId, createdAt: Date.now() } }});
             return result;
         } catch (error) {
             throw new Error(error.message);
@@ -32,12 +32,12 @@ class GroupChatModel {
                 const notifExists = await requestNotification.exists({ user: member });
                 if(notifExists) {
                     // if schema already exists, just update it with new notification
-                    await requestNotification.updateOne({ user: member }, { $push: { notifications: { inviter: userId, requestName: name, groupChatDocId: result._id } } });
+                    await requestNotification.updateOne({ user: member }, { $push: { notifications: { inviter: userId, requestName: name, groupChatDocId: result._id, createdAt: Date.now() } } });
                     continue;
                 }
 
                 // if schema doesn't exists, create new schema
-                await requestNotification.create({ user: member, notifications: [{ inviter: userId, requestName: name, groupChatDocId: result._id }] })
+                await requestNotification.create({ user: member, notifications: [{ inviter: userId, requestName: name, groupChatDocId: result._id, createdAt: Date.now() }] })
             }
 
             return result;
@@ -80,6 +80,35 @@ class GroupChatModel {
 
             // return in an array-object format with "messages" property
             return { messages: formattedResults };
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    // find one by docId
+    async GetMessagesByDocId(docId, userId) {
+        try {
+            const results = await groupChatSchema.findOne({ _id: docId, $or: [{ members: userId }, { host: userId }] }).populate('messages.sender').populate('messages.reactions.reactor');
+
+            // filter results excluding messages that has "isDeletedBy" value of "userId"
+            const formattedResults = results.messages.filter(msg => {
+                // check if isDeletedBy exists. if not just return msg
+                // if is exists then only return the messages that are not deleted
+                if(msg?.isDeletedBy) {
+                    // check if isDeletedBy does not contains value of "userId" then return the value
+                    // else don't return any value
+                    const isDeletedBy =  msg?.isDeletedBy.map(a => String(a)); // convert ObjectId to String to use "includes" array function
+                    if(!isDeletedBy.includes(userId)) { 
+                        return msg;
+                    }
+                }
+                else {
+                    return msg;
+                }
+            });
+
+            // return in an array-object format with "messages" property
+            return { messages: formattedResults, roomId: results.roomId };
         } catch (error) {
             throw new Error(error.message);
         }
@@ -189,17 +218,44 @@ class GroupChatModel {
                 const notifExists = await requestNotification.exists({ user: per });
                 if(notifExists) {
                     // if schema already exists, just update it with new notification
-                    await requestNotification.updateOne({ user: per }, { $push: { notifications: { inviter: userId, requestName: result.groupName, groupChatDocId: docId} } });
+                    await requestNotification.updateOne({ user: per }, { $push: { notifications: { inviter: userId, requestName: result.groupName, groupChatDocId: docId, createdAt: Date.now()} } });
                     continue;
                 }
 
                 // if schema doesn't exists, create new schema
-                await requestNotification.create({ user: per, notifications: [{ inviter: userId, requestName: result.groupName, groupChatDocId: docId }] })
+                await requestNotification.create({ user: per, notifications: [{ inviter: userId, requestName: result.groupName, groupChatDocId: docId, createdAt: Date.now() }] })
             }
 
-            return { msg: "Succesfully send the invitation", status: 201 };
+            return { msg: "Successfully sent the invitation", status: 201 };
         } catch (error) {
             throw new Error(error.message) ;
+        }
+    }
+
+    // leave group chat
+    async Leave({ userId, roomId }) {
+        try {
+            // check if the user (who's going to leave) is the host
+            const isUserHost = await groupChatSchema.findOne({ roomId, host: userId });
+
+            if(isUserHost) { 
+                // if the leaver is the host, assign the first member user to be the next host
+                // by setting new value to the 'host' will automatically remove the user from the groupchat
+                await groupChatSchema.updateOne({ roomId }, { host: isUserHost.members[0] })
+            }
+            else {
+                // leave members
+                await groupChatSchema.updateOne({ roomId }, { $pull: { members: userId }});
+            }
+
+
+            // push message to the group chat saying user leave the group
+            const user = await userSchema.findOne({ _id: userId });
+            const result = await groupChatSchema.findOneAndUpdate({ roomId }, { $push: { messages: { msg: `${user.username} left the group` } } }, { new: true }).populate('messages.sender').populate('messages.reactions.reactor');
+
+            return result;
+        } catch (error) {
+            throw new Error(error.message);
         }
     }
 }

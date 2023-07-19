@@ -10,4 +10,5 @@ export interface Notification {
     action?: boolean;
     groupChatDocId: string;
     _id: string;
+    createdAt: Date;
 }

@@ -1,17 +1,19 @@
-import { useState, useEffect, useContext } from "react";
-import { ActionMeta, MultiValue } from "react-select";
+import { useState, useEffect, useContext, useRef } from "react";
+import { MultiValue } from "react-select";
 import axios from "../../utils/axios";
 import {
   MessageContext,
   MessageContextType,
 } from "../../context/message.context";
 import { toast } from "react-toastify";
+import { socket } from "../../pages/dashboard";
 
 export default function useInvitesForm() {
   const [people, setPeople] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [invited, setInvited] = useState<string[]>([]);
   const messageContext = useContext<MessageContextType | null>(MessageContext);
+  const selectRef = useRef<any>(null);
 
   // fetch people
   async function fetchPeople() {
@@ -59,9 +61,18 @@ export default function useInvitesForm() {
         people: invited,
         docId: messageContext?.chatUser.msgDocId,
       });
-      console.log(data);
       if (data.status === 201) {
+        // display message
         toast.success(data.msg);
+        // emit notification events to update the data notifications of users invited
+        invited.forEach((userId) => {
+          socket.emit("notifications", userId);
+        });
+
+        if (selectRef.current) {
+          selectRef.current.clearValue(); // clear the value of the selection
+        }
+        setInvited([]); // reset the state
       }
     } catch (error) {
       console.log(error);
@@ -83,5 +94,6 @@ export default function useInvitesForm() {
     handleSubmitInvites,
     promiseOptions,
     people,
+    selectRef,
   };
 }

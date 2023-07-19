@@ -4,6 +4,7 @@ import {
 } from "../../pages/dashboard/notifications/types";
 import { toast } from "react-toastify";
 import axios from "../../utils/axios";
+import { socket } from "../../pages/dashboard";
 
 type Props = {
   notif: Notification;
@@ -23,6 +24,9 @@ export default function useInvitationAction(props: Props) {
       });
       setNotifications(data);
       toast.success("Succesfully accepted the request");
+
+      // emit event to update the messages to all group chat members
+      socket.emit("update_group_messages", notif?.groupChatDocId);
     } catch (error: any) {
       console.log(error);
       if (error?.response?.data.msg) {
