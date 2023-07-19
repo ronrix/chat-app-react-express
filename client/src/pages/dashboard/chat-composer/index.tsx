@@ -13,11 +13,11 @@ export default function ChatComposer() {
     useComposer();
 
   return (
-    <main className='flex flex-col h-screen'>
+    <main className='flex flex-col h-screen overflow-hidden'>
       <ComposeContainer msgs={msgs} loading={loading} />
 
       {/* composer */}
-      <div className='rounded-xl relative border w-full'>
+      <div className='rounded-xl relative'>
         <form onSubmit={onSubmit}>
           <ReactQuill
             ref={quillRef}
