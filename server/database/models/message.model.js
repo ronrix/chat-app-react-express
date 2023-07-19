@@ -20,8 +20,14 @@ class MessageModel {
                 }
             ]);
 
+            // populate the 'messages.reactions.reactor' field with user reference
+            const populatedMessages = await MessageSchema.populate(messages, { 
+                path: 'messages.reactions.reactor',
+                model: 'user' // user document
+            });
+
             // filter results excluding messages that has "isDeletedBy" value of "userId"
-            const results = messages[0].messages.filter(msg => {
+            const results = populatedMessages[0].messages.filter(msg => {
                 // check if isDeletedBy exists. if not just return msg
                 // if is exists then only return the messages that are not deleted
                 if(msg?.isDeletedBy) {
@@ -251,7 +257,7 @@ class MessageModel {
             const result = await messagesSchema.findOneAndUpdate(
                 { _id: docId, messages: { $elemMatch: { _id: msgId } } }, 
                 { $push: { 'messages.$.reactions': reaction } }, 
-                { new: true });
+                { new: true }).populate('messages.reactions.reactor');
             return result;
         } catch (error) {
             throw new Error(error.message) ;
@@ -264,7 +270,7 @@ class MessageModel {
             const result = await messagesSchema.findOneAndUpdate(
                 { _id: docId, messages: { $elemMatch: { _id: msgId } } }, 
                 { $pull: { 'messages.$.reactions': { _id: reactionId } } }, 
-                { new: true });
+                { new: true }).populate('messages.reactions.reactor');
 
             return result;
         } catch (error) {

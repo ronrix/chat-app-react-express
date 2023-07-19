@@ -1,5 +1,10 @@
+import { useContext } from "react";
 import { useAuthUser } from "react-auth-kit";
 import { IMessageType, IReaction } from "./types";
+import {
+  MessageContext,
+  MessageContextType,
+} from "../../../context/message.context";
 
 type Props = {
   reactions: IReaction[];
@@ -11,6 +16,7 @@ type Props = {
 export default function Reactions(props: Props) {
   const { reactions, msg, handleOpen, removeReaction } = props;
   const auth = useAuthUser();
+  const messageContext = useContext<MessageContextType | null>(MessageContext);
 
   return (
     <div
@@ -26,7 +32,11 @@ export default function Reactions(props: Props) {
             <span
               key={react._id}
               className='text-[12px] cursor-pointer'
-              onClick={() => removeReaction(react)}
+              onClick={() =>
+                !messageContext?.chatUser.isGroupChat
+                  ? removeReaction(react)
+                  : handleOpen()
+              }
             >
               {react.reaction}
             </span>

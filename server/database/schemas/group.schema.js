@@ -17,7 +17,7 @@ const GroupChatSchema = new Schema({
             msg: Schema.Types.String,
             sender: { type: Schema.Types.ObjectId, ref: 'user' },
             isDeletedBy: [{ type: Schema.Types.ObjectId }],
-            reactions: [{ reactor: Schema.Types.ObjectId, reaction: Schema.Types.String }],
+            reactions: [{ reactor: { type: Schema.Types.ObjectId, ref: 'user' }, reaction: Schema.Types.String }],
             createdAt: Schema.Types.Date
         }
     ],

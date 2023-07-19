@@ -8,6 +8,6 @@ export interface IMessageType {
 
 export interface IReaction { 
     _id: string; 
-    reactor: string; 
+    reactor: { _id: string; username: string; avatar: string }; 
     reaction: string 
 }

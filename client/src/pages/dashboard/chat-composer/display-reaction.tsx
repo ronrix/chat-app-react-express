@@ -5,18 +5,16 @@ import {
   Dialog,
   DialogHeader,
   DialogBody,
+  Avatar,
 } from "@material-tailwind/react";
 import { useAuthUser } from "react-auth-kit";
+import { IReaction } from "./types";
 
 type Props = {
   open: boolean;
   handleOpen: () => void;
-  reactions: { _id: string; reactor: string; reaction: string }[];
-  removeReaction: (react: {
-    _id: string;
-    reaction: string;
-    reactor: string;
-  }) => void;
+  reactions: IReaction[];
+  removeReaction: (react: IReaction) => void;
 };
 
 export default function DisplayReactions(props: Props) {
@@ -32,31 +30,43 @@ export default function DisplayReactions(props: Props) {
         <DialogBody divider>
           <section className='flex flex-col items-center justify-center'>
             {reactions.length &&
-              reactions.map(
-                (
-                  react: { _id: string; reactor: string; reaction: string },
-                  i
-                ) => {
-                  return (
-                    <div key={i} className='flex items-center justify-between'>
-                      <span key={i} className='text-3xl'>
-                        {react.reaction}
+              reactions.map((react: IReaction) => {
+                return (
+                  <section
+                    key={react._id}
+                    className='flex items-center justify-between w-full'
+                  >
+                    <div className='flex items-center gap-3'>
+                      <Avatar
+                        src={
+                          import.meta.env.VITE_BACKEND_URL +
+                          "/" +
+                          react.reactor.avatar
+                        }
+                        alt={`${react.reactor.username} avatar`}
+                        size='sm'
+                      />
+                      <span className='text-xl capitalize'>
+                        {react.reactor.username}
                       </span>
-                      {react?.reactor === auth()?.id && (
-                        <Button
-                          className='flex items-center rounded-md px-2'
-                          color='red'
-                          variant='outlined'
-                          onClick={() => removeReaction(react)}
-                        >
-                          <XMarkIcon className='h-5 w-5' />
-                          remove
-                        </Button>
-                      )}
                     </div>
-                  );
-                }
-              )}
+                    <div className='flex items-center'>
+                      <span className='text-3xl'>{react.reaction}</span>
+                      <Button
+                        className={`flex items-center rounded-md px-2 ${
+                          react?.reactor._id !== auth()?.id && "invisible"
+                        }`}
+                        color='red'
+                        variant='outlined'
+                        size='sm'
+                        onClick={() => removeReaction(react)}
+                      >
+                        <XMarkIcon className='h-5 w-5' />
+                      </Button>
+                    </div>
+                  </section>
+                );
+              })}
           </section>
         </DialogBody>
       </Dialog>

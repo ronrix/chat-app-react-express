@@ -37,7 +37,7 @@ export default function useBubble(props: IProps) {
   // remove reaction from "reactions" state once the emoji was clicked
   const removeReaction = (react: IReaction) => {
     // return if the reactor is the caller, then just return
-    if (react.reactor !== auth()?.id) return;
+    if (react.reactor._id !== auth()?.id) return;
 
     const idx = reactions.map((r) => r.reaction).indexOf(react.reaction); // get the index of the 'react' emoji
     reactions.splice(idx, 1); // remove the 'react' emoji from the state
@@ -66,11 +66,9 @@ export default function useBubble(props: IProps) {
   const handleEmojiSelection = useCallback(
     (selection: { text: string; emoji: string }) => {
       // check if the selected emoji was already exists in the array of reactions
-      const isEmojiExists = reactions.some(
-        (react: { reactor: string; reaction: string }) => {
-          react.reaction.includes(selection.emoji);
-        }
-      );
+      const isEmojiExists = reactions.some((react: IReaction) => {
+        react.reaction.includes(selection.emoji);
+      });
 
       if (isEmojiExists) return; // return if reactions array already have the emoji selected
 

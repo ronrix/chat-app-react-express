@@ -59,7 +59,7 @@ class GroupChatModel {
     // find one by roomId
     async GetMessagesByRoomId(roomId, userId) {
         try {
-            const results = await groupChatSchema.findOne({ roomId, $or: [{ members: userId }, { host: userId }] }).populate('messages.sender');
+            const results = await groupChatSchema.findOne({ roomId, $or: [{ members: userId }, { host: userId }] }).populate('messages.sender').populate('messages.reactions.reactor');
 
             // filter results excluding messages that has "isDeletedBy" value of "userId"
             const formattedResults = results.messages.filter(msg => {
@@ -135,7 +135,8 @@ class GroupChatModel {
             const result = await groupChatSchema.findOneAndUpdate(
                 { _id: docId, messages: { $elemMatch: { _id: msgId } } }, 
                 { $push: { 'messages.$.reactions': reaction } }, 
-                { new: true });
+                { new: true }).populate('messages.reactions.reactor');
+                console.log(result);
             return result;
         } catch (error) {
             throw new Error(error.message) ;
@@ -148,7 +149,7 @@ class GroupChatModel {
             const result = await groupChatSchema.findOneAndUpdate(
                 { _id: docId, messages: { $elemMatch: { _id: msgId } } }, 
                 { $pull: { 'messages.$.reactions': { _id: reactionId } } }, 
-                { new: true });
+                { new: true }).populate('messages.reactions.reactor');
 
             return result;
         } catch (error) {
