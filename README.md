@@ -21,4 +21,4 @@ Simple **Chat APP** created with React TS and Node + Express + Socket.IO
     - [x] Image viewer
     - [x] WYSIWYG editor
     - [x] Online status
-    - [] Conference/Group Chat
+    - [x] Conference/Group Chat
