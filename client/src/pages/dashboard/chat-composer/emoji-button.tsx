@@ -1,5 +1,6 @@
 import { useAuthUser } from "react-auth-kit";
 import { IMessageType } from "./types";
+import { FaceSmileIcon } from "@heroicons/react/24/solid";
 
 type Props = {
   msg: IMessageType;
@@ -12,18 +13,14 @@ export default function EmojiBtn(props: Props) {
 
   return (
     <div
-      className={`absolute top-4 p-1 bg-white h-6 w-6 flex items-center justify-center rounded-full cursor-pointer ${
+      className={`absolute cursor-pointer ${
         msg.sender == auth()?.id || msg.sender._id == auth()?.id
           ? "-left-5"
           : "-right-5"
       }`}
       onClick={toggleEmojiPicker}
     >
-      <img
-        src='../../public/emoji-plus.png'
-        alt='emoji plus button'
-        className='h-4 w-4 filter grayscale opacity-75'
-      />
+      <FaceSmileIcon className='h-4 w-4 text-gray-400' />
     </div>
   );
 }
