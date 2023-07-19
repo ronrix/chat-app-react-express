@@ -27,6 +27,18 @@ module.exports = (app) => {
         }
     });
 
+    // invites new people
+    app.post('/groups/invites', [ValidateToken], async (req, res) => {
+        try {
+            const { _id } = req.user;
+            const { people, docId } = req.body;
+            const { data } = await groupChatService.InvitePeople({ people, docId, userId: _id });
+            return res.json(data);
+        } catch (error) {
+            return res.status(500).json({ msg: error.message });
+        }
+    });
+
     // accept request invitation
     app.put('/invitation/accept', [ValidateToken], async (req, res) => {
         try {

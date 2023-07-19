@@ -141,6 +141,16 @@ class UserService {
            throw new Error(error) ;
         }
     }
+
+    // get user by username
+    async GetFilterByName(userQuery) {
+        try {
+            const result = await this.user.GetFilterByName(userQuery);
+            return FormatData(result);
+        } catch (error) {
+           throw new Error(error);
+        }
+    }
 }
 
 module.exports = UserService;

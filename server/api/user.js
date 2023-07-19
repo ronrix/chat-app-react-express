@@ -126,4 +126,16 @@ module.exports = (app) => {
             return res.status(400) .json({msg: error.message});
         }
     });
+
+    // get user by username
+    app.get('/user/:userQuery', [ValidateToken], async (req, res) => {
+        try {
+            const { userQuery } = req.query;
+            const result = await service.GetFilterByName(userQuery);
+            return res.json(result);
+        } catch (error) {
+            return res.status(500).json({msg: error.message});
+        }
+    });
+
 }

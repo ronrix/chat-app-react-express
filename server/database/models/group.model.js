@@ -165,6 +165,42 @@ class GroupChatModel {
             throw new Error(error.message) ;
         }
     }
+
+    // invite 
+    async Invite({ people, docId, userId }) {
+        try {
+            const usersToBeInvited = [];
+
+            // check if 'people' is already in the 'group chat'
+            // store only the 'users' to be invited
+            for(const per of people) {
+                const userAlreadyExistsInGC = await groupChatSchema.exists({ _id: docId, members: per });
+                if(userAlreadyExistsInGC) continue;
+                usersToBeInvited.push(per);
+            }
+
+            const result = await groupChatSchema.findOneAndUpdate({ _id: docId }, { $push: { pendingInvites: usersToBeInvited } }, { new: true });
+
+            // store the notification data to the users who were invited
+            // loop through members
+            for(const per of usersToBeInvited) {
+                // check if members already have notification schema 
+                const notifExists = await requestNotification.exists({ user: per });
+                if(notifExists) {
+                    // if schema already exists, just update it with new notification
+                    await requestNotification.updateOne({ user: per }, { $push: { notifications: { inviter: userId, requestName: result.groupName, groupChatDocId: docId} } });
+                    continue;
+                }
+
+                // if schema doesn't exists, create new schema
+                await requestNotification.create({ user: per, notifications: [{ inviter: userId, requestName: result.groupName, groupChatDocId: docId }] })
+            }
+
+            return { msg: "Succesfully send the invitation", status: 201 };
+        } catch (error) {
+            throw new Error(error.message) ;
+        }
+    }
 }
 
 module.exports = GroupChatModel;

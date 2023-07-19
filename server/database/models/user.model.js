@@ -4,6 +4,15 @@ const bcrypt = require('bcryptjs');
 const { DEFAULT_AVATAR_PATH } = require("../../config");
 
 class UserModel {
+    async GetFilterByName(userQuery) {
+        try {
+            const users = await UserSchema.find({ username: { $regex: `${userQuery}`, $options: 'i' } }).limit(5);
+            return users;
+        } catch (error) {
+            throw new Error(error.message) ;
+        }
+    }
+
     // find user by email
     async FindByEmail(email) {
         try {
@@ -69,7 +78,7 @@ class UserModel {
     async GetAll(id) {
         try {
             // get all the users except the user who calls it
-            const res = await UserSchema.find({ _id: { $ne: id }});
+            const res = await UserSchema.find({ _id: { $ne: id } }, null, { limit: 10 });
             return res;
         } catch (error) {
             throw new Error(error);
